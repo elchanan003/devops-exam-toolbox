@@ -1,0 +1,25 @@
+---
+// Home index: renders src/data/home-index.mjs. Backticks in link labels become <code>.
+import { firstAid, index } from '../data/home-index.mjs';
+const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
+const url = (href: string) => base + href;
+const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+const fmt = (s: string) => esc(s).replace(/`([^`]+)`/g, '<code>$1</code>');
+---
+<nav class="tb-firstaid not-content" aria-label="עזרה ראשונה">
+  {firstAid.map((f) => (
+    <a href={url(f.href)}><b>{f.title}</b><span>{f.text}</span></a>
+  ))}
+</nav>
+<div class="tb-index">
+  {index.map((block) => (
+    <section>
+      <h2><a href={url(block.href)}>{block.tab}</a><small dir="ltr">{block.note}</small></h2>
+      <ul>
+        {block.links.map(([label, href]) => (
+          <li><a href={url(href)} set:html={fmt(label)} /></li>
+        ))}
+      </ul>
+    </section>
+  ))}
+</div>

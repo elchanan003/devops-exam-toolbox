@@ -1,48 +1,145 @@
 /* ==========================================================================
-   DevOps Exam Toolbox — functional baseline (to be restyled by a designer)
-   Sections: 1 tokens · 2 palette · 3 typography · 4 code (LTR) · 5 placeholders · 6 tables · 7 components
+   DevOps Exam Toolbox — site styles
+   World: the guide family (green-tinted neutrals, one teal accent, Heebo/Rubik,
+   JetBrains Mono for code only, hairlines instead of boxes).
+   Sections:
+     1 palette (dark default, light override)   2 layout + type scale
+     3 browser surfaces                          4 headings + prose rhythm
+     5 code (LTR) + placeholders                 6 tables
+     7 callouts (asides)                         8 sidebar + header
+     9 components (RunsOn, kbd)                  10 home index
+   Starlight: dark is :root, light is :root[data-theme='light'].
+   Unlayered rules here beat Starlight's @layer rules.
    ========================================================================== */
 
-/* 1. Tokens ---------------------------------------------------------------- */
+/* 1. Palette ---------------------------------------------------------------- */
 :root {
-  --tb-placeholder-bg: #5a4a10;
-  --tb-placeholder-ink: #ffe08a;
-  --tb-placeholder-border: #b8952a;
-  --tb-badge-bg: var(--sl-color-accent-low);
-  --tb-badge-ink: var(--sl-color-text-accent);
-}
-:root[data-theme='light'] {
-  --tb-placeholder-bg: #fff0b8;
-  --tb-placeholder-ink: #5a4300;
-  --tb-placeholder-border: #d9b13b;
-}
+  /* green-tinted gray ramp (hue 150) — replaces Starlight's blue-gray */
+  --sl-color-white: #f2f7f4;
+  --sl-color-gray-1: #e4ece7;
+  --sl-color-gray-2: #c4d1ca;
+  --sl-color-gray-3: #8fa198;
+  --sl-color-gray-4: #5a6b63;
+  --sl-color-gray-5: #2a3630;
+  --sl-color-gray-6: #18211c;
+  --sl-color-black: #0d1310;
 
-/* 2. Palette (provisional) -> Starlight variables.
-   Starlight: dark is the :root default, light is :root[data-theme='light'].
-   Unlayered rules here beat Starlight's @layer rules. ---------------------- */
-:root {
   --sl-color-accent-low: #123029;
   --sl-color-accent: #41c4aa;
   --sl-color-accent-high: #a8e8d9;
+
+  --sl-color-text: var(--sl-color-gray-1);
+  --sl-color-bg-nav: #111915;
+  --sl-color-bg-sidebar: #111915;
+  --sl-color-bg-inline-code: #1d2822;
+  --sl-color-hairline-light: #26322c;
+  --sl-color-hairline: #1d2822;
+
+  /* toolbox tokens */
+  --tb-surface: #141b17;
+  --tb-rule: #26322c;
+  --tb-muted: #8fa198;
+  --tb-placeholder-bg: #4a3a0c;
+  --tb-placeholder-ink: #ffd772;
+  --tb-placeholder-border: #8a6a1a;
+  --tb-note-bg: #10241f;   --tb-note-rule: #1f4a40;   --tb-note-ink: #a8e8d9;
+  --tb-trap-bg: #2a2010;   --tb-trap-rule: #5c4419;   --tb-trap-ink: #f3c46e;
+  --tb-danger-bg: #2c1514; --tb-danger-rule: #6a2a26; --tb-danger-ink: #f59b90;
+  --tb-tip-bg: #172219;    --tb-tip-rule: #2f4a33;    --tb-tip-ink: #a9d9a2;
+  --tb-focus: #41c4aa;
+  --tb-selection: rgba(65, 196, 170, 0.32);
 }
+
 :root[data-theme='light'] {
+  --sl-color-white: #0f1a15;
+  --sl-color-gray-1: #14201b;
+  --sl-color-gray-2: #2b3832;
+  --sl-color-gray-3: #46554e;
+  --sl-color-gray-4: #6b7b73;
+  --sl-color-gray-5: #c9d4ce;
+  --sl-color-gray-6: #e6ece8;
+  --sl-color-gray-7: #f3f5f3;
+  --sl-color-black: #fbfcfb;
+
   --sl-color-accent-low: #e2efec;
   --sl-color-accent: #0c6b5b;
   --sl-color-accent-high: #0a4f43;
+
+  --sl-color-text: #22302a;
+  --sl-color-text-accent: #0c6b5b;
+  --sl-color-bg-nav: #f3f5f3;
+  --sl-color-bg-sidebar: #f3f5f3;
+  --sl-color-bg-inline-code: #eaf0ec;
+  --sl-color-hairline-light: #dfe6e1;
+  --sl-color-hairline: #d8e0db;
+
+  --tb-surface: #ffffff;
+  --tb-rule: #d8e0db;
+  --tb-muted: #586a62;
+  --tb-placeholder-bg: #fff0b8;
+  --tb-placeholder-ink: #5a4300;
+  --tb-placeholder-border: #d9b13b;
+  --tb-note-bg: #eef6f3;   --tb-note-rule: #b9d9d0;   --tb-note-ink: #0a4f43;
+  --tb-trap-bg: #fdf5e6;   --tb-trap-rule: #ecd3a0;   --tb-trap-ink: #7a4d00;
+  --tb-danger-bg: #fcefed; --tb-danger-rule: #eebfb8; --tb-danger-ink: #9b2c22;
+  --tb-tip-bg: #f1f7ef;    --tb-tip-rule: #c6dfc0;    --tb-tip-ink: #2d5a28;
+  --tb-focus: #0c6b5b;
+  --tb-selection: rgba(12, 107, 91, 0.18);
 }
 
-/* 3. Typography ------------------------------------------------------------ */
+/* 2. Layout + type scale (fixed rem, tight ratio — Read/Operate) ------------ */
 :root {
   --sl-font: 'Heebo', system-ui, sans-serif;
   --sl-font-mono: 'JetBrains Mono', ui-monospace, monospace;
   --tb-font-heading: 'Rubik', 'Heebo', system-ui, sans-serif;
+
+  --sl-content-width: 52rem;     /* second-monitor use: room for tables and code */
+  --sl-sidebar-width: 16.5rem;
+  --sl-text-body: 1.0625rem;     /* 17px */
+  --sl-line-height: 1.7;
+  --sl-text-code: 0.875rem;
+  --sl-text-h1: 2.125rem;
+  --sl-text-h2: 1.5rem;
+  --sl-text-h3: 1.1875rem;
+  --sl-text-h4: 1.0625rem;
 }
-h1, h2, h3, h4, .sl-markdown-content :is(h1, h2, h3, h4) {
-  font-family: var(--tb-font-heading);
-  text-wrap: balance;
+@media (min-width: 50em) {
+  :root {
+    --sl-text-h1: 2.375rem;
+    --sl-text-h2: 1.625rem;
+    --sl-text-h3: 1.25rem;
+    --sl-text-h4: 1.0625rem;
+  }
 }
 
-/* 4. Code blocks stay LTR inside RTL pages --------------------------------- */
+/* 3. Browser surfaces -------------------------------------------------------- */
+::selection { background: var(--tb-selection); }
+html { accent-color: var(--sl-color-accent); scrollbar-color: var(--sl-color-gray-5) transparent; }
+:focus-visible { outline: 2px solid var(--tb-focus); outline-offset: 2px; border-radius: 2px; }
+.sl-markdown-content a { text-underline-offset: 0.2em; text-decoration-thickness: 1px; }
+.sl-markdown-content a:hover { text-decoration-thickness: 2px; }
+td, th { font-variant-numeric: tabular-nums; }
+
+/* 4. Headings + prose rhythm ---------------------------------------------------- */
+h1, h2, h3, h4,
+.sl-markdown-content :is(h1, h2, h3, h4) {
+  font-family: var(--tb-font-heading);
+  text-wrap: balance;
+  letter-spacing: -0.01em;
+}
+.sl-markdown-content h2 {
+  margin-top: 2.6rem;
+  padding-top: 1.1rem;
+  border-top: 1px solid var(--tb-rule);
+  font-weight: 600;
+}
+.sl-markdown-content h3 { margin-top: 1.8rem; font-weight: 600; }
+.sl-markdown-content :is(h2, h3) + * { margin-top: 0.6rem; }
+.sl-markdown-content p,
+.sl-markdown-content li { max-width: 72ch; }
+.sl-markdown-content strong { color: var(--sl-color-white); font-weight: 700; }
+
+/* 5. Code blocks stay LTR inside RTL pages ------------------------------------ */
 .expressive-code,
 .expressive-code .frame,
 .expressive-code pre,
@@ -53,37 +150,109 @@ h1, h2, h3, h4, .sl-markdown-content :is(h1, h2, h3, h4) {
   unicode-bidi: isolate;
 }
 .expressive-code .copy { direction: ltr; }
+.expressive-code { margin-block: 1rem; }
+.expressive-code .frame.has-title .header .title,
+.expressive-code .frame .header .title {
+  font-family: var(--sl-font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.01em;
+}
 :not(pre) > code {
   direction: ltr;
   unicode-bidi: isolate;
+  font-size: 0.86em;
+  padding: 0.1em 0.35em;
+  border-radius: 4px;
+  border: 1px solid var(--sl-color-hairline-light);
 }
 
-/* 5. Placeholders: <UPPER_SNAKE> ------------------------------------------- */
-/* Block code: EC text markers (regex meta added by src/plugins/placeholders.mjs). */
+/* Placeholders <UPPER_SNAKE>: amber chips.
+   Block code: EC text markers (regex meta added by src/plugins/placeholders.mjs).
+   Inline code: span.ph added by the rehype plugin. */
 .expressive-code {
   --ec-tm-markBg: var(--tb-placeholder-bg);
   --ec-tm-markBrdCol: var(--tb-placeholder-border);
 }
 .expressive-code .ec-line mark span {
   color: var(--tb-placeholder-ink) !important; /* beat EC inline token colours */
+  font-weight: 600;
 }
-/* Inline code: span.ph added by rehype plugin. */
 code .ph, .ph {
   background: var(--tb-placeholder-bg);
   color: var(--tb-placeholder-ink);
   border-radius: 3px;
   padding-inline: 0.15em;
   outline: 1px solid var(--tb-placeholder-border);
+  font-weight: 600;
 }
 
-/* 6. Tables: horizontal scroll on narrow screens --------------------------- */
+/* 6. Tables: dense, hairline rows, scroll on narrow screens ------------------- */
 .sl-markdown-content table {
   display: block;
   max-width: 100%;
   overflow-x: auto;
+  font-size: 0.9375rem;
+  line-height: 1.55;
+  border-collapse: collapse;
 }
+.sl-markdown-content :is(th, td) {
+  padding: 0.5rem 0.75rem;
+  border-bottom: 1px solid var(--tb-rule);
+  vertical-align: top;
+  text-align: start;
+}
+.sl-markdown-content th {
+  font-family: var(--tb-font-heading);
+  font-weight: 600;
+  font-size: 0.875rem;
+  color: var(--sl-color-white);
+  background: transparent;
+  border-bottom: 2px solid var(--sl-color-gray-5);
+  white-space: nowrap;
+}
+.sl-markdown-content tr:hover td { background: color-mix(in srgb, var(--sl-color-accent) 5%, transparent); }
+.sl-markdown-content td code { white-space: nowrap; }
+.sl-markdown-content td:first-child { font-weight: 500; }
 
-/* 7. Components ------------------------------------------------------------ */
+/* 7. Callouts: tinted field + 1px rule, no thick side bar ---------------------- */
+.starlight-aside {
+  border: 1px solid var(--tb-aside-rule);
+  border-radius: 8px;
+  background: var(--tb-aside-bg);
+  color: var(--sl-color-text);
+  padding: 0.85rem 1.1rem;
+}
+.starlight-aside--note    { --tb-aside-bg: var(--tb-note-bg);   --tb-aside-rule: var(--tb-note-rule);   --sl-color-asides-text-accent: var(--tb-note-ink); }
+.starlight-aside--caution { --tb-aside-bg: var(--tb-trap-bg);   --tb-aside-rule: var(--tb-trap-rule);   --sl-color-asides-text-accent: var(--tb-trap-ink); }
+.starlight-aside--danger  { --tb-aside-bg: var(--tb-danger-bg); --tb-aside-rule: var(--tb-danger-rule); --sl-color-asides-text-accent: var(--tb-danger-ink); }
+.starlight-aside--tip     { --tb-aside-bg: var(--tb-tip-bg);    --tb-aside-rule: var(--tb-tip-rule);    --sl-color-asides-text-accent: var(--tb-tip-ink); }
+.starlight-aside__title {
+  font-family: var(--tb-font-heading);
+  font-size: 0.9375rem;
+  font-weight: 600;
+  letter-spacing: 0;
+}
+.starlight-aside__icon { font-size: 1.15em; }
+.starlight-aside__title + .starlight-aside__content { margin-top: 0.35rem; }
+.starlight-aside__content { font-size: 0.975rem; line-height: 1.65; }
+/* the page intro (first note) reads as the lede: a touch larger, no icon noise */
+.sl-markdown-content > .starlight-aside--note:first-child .starlight-aside__content { font-size: 1.0625rem; }
+
+/* 8. Sidebar + header ----------------------------------------------------------- */
+.sidebar-content { font-size: 0.9375rem; }
+.sidebar-content details summary .group-label .large,
+.sidebar-content .group-label .large {
+  font-family: var(--tb-font-heading);
+  font-weight: 600;
+  font-size: 0.9375rem;
+  color: var(--sl-color-white);
+}
+.sidebar-content a[aria-current='page'] {
+  font-weight: 600;
+}
+.site-title { font-family: var(--tb-font-heading); font-weight: 700; letter-spacing: -0.01em; }
+
+/* 9. Components ------------------------------------------------------------------ */
 .tb-runson {
   display: inline-block;
   direction: ltr;
@@ -92,7 +261,95 @@ code .ph, .ph {
   font-size: var(--sl-text-xs);
   padding: 0.1em 0.6em;
   border-radius: 999px;
-  background: var(--tb-badge-bg);
-  color: var(--tb-badge-ink);
-  border: 1px solid var(--sl-color-accent);
+  background: var(--sl-color-accent-low);
+  color: var(--sl-color-text-accent);
+  border: 1px solid color-mix(in srgb, var(--sl-color-accent) 45%, transparent);
+}
+kbd {
+  font-family: var(--sl-font-mono);
+  font-size: 0.8em;
+  padding: 0.1em 0.45em;
+  border: 1px solid var(--sl-color-gray-5);
+  border-bottom-width: 2px;
+  border-radius: 4px;
+  background: var(--tb-surface);
+  direction: ltr;
+  unicode-bidi: isolate;
+}
+
+/* 10. Home: the back-of-book index ------------------------------------------------ */
+/* the home page has no TOC column: let the index use the full main width (3 columns on a wide monitor) */
+:root:has(.tb-index) { --sl-content-width: 76rem; }
+.tb-home-lede { font-size: 1.125rem; color: var(--sl-color-gray-2); max-width: 62ch; margin-top: 0; }
+:root[data-theme='light'] .tb-home-lede { color: var(--sl-color-gray-3); }
+
+.tb-firstaid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(11.5rem, 1fr));
+  gap: 0;
+  margin-block: 1.5rem 0.5rem !important;
+  border-block: 1px solid var(--tb-rule);
+}
+.tb-firstaid a {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  padding: 0.8rem 0.9rem;
+  text-decoration: none;
+  color: var(--sl-color-white);
+  border-inline-end: 1px solid var(--tb-rule);
+  transition: background-color 160ms ease-out;
+}
+.tb-firstaid a:last-child { border-inline-end: 0; }
+@media (max-width: 40rem) {
+  .tb-firstaid a { border-inline-end: 0; border-bottom: 1px solid var(--tb-rule); }
+  .tb-firstaid a:last-child { border-bottom: 0; }
+}
+.tb-firstaid a:hover { background: var(--sl-color-accent-low); }
+.tb-firstaid b { font-family: var(--tb-font-heading); font-weight: 600; font-size: 1rem; color: var(--sl-color-text-accent); }
+.tb-firstaid span { font-size: 0.875rem; color: var(--tb-muted); line-height: 1.45; }
+
+.tb-index {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(21rem, 1fr));
+  column-gap: 2.5rem;
+  row-gap: 0.5rem;
+  margin-top: 1.25rem !important;
+}
+.tb-index section { break-inside: avoid; margin: 0 !important; padding-block: 0.9rem 0.6rem; border-top: 2px solid var(--sl-color-gray-5); }
+.tb-index h2 {
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  font-size: 1.125rem;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+}
+.tb-index h2 a { color: var(--sl-color-white); text-decoration: none; }
+.tb-index h2 a:hover { color: var(--sl-color-text-accent); }
+.tb-index h2 small {
+  font-family: var(--sl-font);
+  font-weight: 400;
+  font-size: 0.8125rem;
+  color: var(--tb-muted);
+  letter-spacing: 0;
+}
+.tb-index ul { list-style: none; padding: 0; margin: 0.45rem 0 0 !important; }
+.tb-index li { margin: 0 !important; max-width: none; }
+.tb-index li a {
+  display: block;
+  padding: 0.22rem 0;
+  font-size: 0.96875rem;
+  line-height: 1.45;
+  color: var(--sl-color-text);
+  text-decoration: none;
+  border-bottom: 1px dotted transparent;
+}
+.tb-index li a:hover { color: var(--sl-color-text-accent); }
+.tb-index li a code { font-size: 0.85em; }
+
+@media (prefers-reduced-motion: reduce) {
+  .tb-firstaid a { transition: none; }
 }
