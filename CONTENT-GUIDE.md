@@ -109,6 +109,12 @@ sidebar:
 | `<USER>` | username (bot / deploy token user) | `gitlab+deploy-token-1` |
 | `<SERVICE>` | microservice name | `ingest-api` |
 | `<FILE>` | a file path | `apps/trident/versions/dev.yaml` |
+| `<NS_PREFIX>` | namespace prefix before the env | `trident` |
+| `<DIR>` | a directory path | `~/.local/share/trident` |
+| `<KEY>` | a key inside a Secret/ConfigMap | `postgres_password` |
+| `<DOMAIN>` | DNS domain for env hosts | `trident.test` |
+| `<VAR_NAME>` | an environment variable name | `TRIDENT_GITOPS_URL` |
+| `<EMAIL>` | an email for git identity | `trident-ci@noreply` |
 
 - Show the TRIDENT value on the line **below** as a comment, only where it helps:
   ```bash
