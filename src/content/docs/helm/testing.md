@@ -59,7 +59,7 @@ helm template r mini --set-string image.tag=1.2 | grep -q 'message: "hello"' && 
 helm template r mini --set-string image.tag=1.2 | grep -q 'image: "nginx:1.2"' && echo PASS || echo FAIL
 ```
 
-**איך מוודאים:** `PASS` פעמיים. הבדיקה הזאת היא מה ש"בדיקת values" אומרת: ערך הוזרק → הוא מופיע ב-render.
+**איך מוודאים:** `PASS` פעמיים. הבדיקה הזאת היא מה ש"בדיקת values" אומרת: ערך הוזרק, ולכן הוא מופיע ב-render.
 
 ### negative self-test: להשחית, לראות FAIL, להחזיר
 

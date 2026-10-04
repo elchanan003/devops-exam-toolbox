@@ -6,7 +6,7 @@ sidebar:
 ---
 
 :::note[בקצרה]
-ה-runner הוא התהליך שמריץ jobs. ב-gitlab.com Free אין group runners, לכן יוצרים **project runner** ורושמים אותו על ה-VM.
+ה-runner הוא התהליך שמריץ jobs. בתרגול (gitlab.com Free) לא הופיע כפתור group runner, לכן יוצרים **project runner** ורושמים אותו על ה-VM. התיעוד מציג group runners בכל ה-tiers: אם הכפתור קיים אצלך, group runner חוסך נעילה והפעלה ידנית פר project.
 הזרימה המודרנית: יוצרים runner ב-UI, מקבלים token `glrt-…`, ורושמים עם `gitlab-runner register`. אחרי ההרשמה ה-service כבר רץ.
 :::
 
@@ -22,7 +22,7 @@ Project → Settings → CI/CD → Runners → Expand → New project runner
 Next page shows the runner authentication token  glrt-…  (copy it now) and a register command.
 ```
 
-(ב-Premium יש גם `Group → Build → Runners → New group runner`. ב-Free הכפתור חסר.) ניסוח התפריט עשוי להשתנות בין גרסאות.
+(אם יש לך Owner על ה-group, נסה גם `Group → Build → Runners → New group runner`. בתרגול ב-Free הכפתור חסר.) ניסוח התפריט עשוי להשתנות בין גרסאות.
 
 ## לרשום על ה-VM
 

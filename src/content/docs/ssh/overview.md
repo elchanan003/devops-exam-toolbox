@@ -32,7 +32,7 @@ cat <FILE>.pub
 ```
 
 ```text title="GitLab UI"
-User Settings → SSH Keys → Add new key
+Avatar → Edit profile → SSH Keys → Add new key
 Key: paste the whole line (starts with ssh-ed25519 ...)
 Title: any label, e.g. exam-vm → Add key
 ```

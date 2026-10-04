@@ -149,7 +149,7 @@ Rollback ב-GitOps הוא `git revert` + `push`, לא תיקון חי בקלאס
 
 ## לשחזר commit שאבד (reflog)
 
-`reflog` הוא יומן של כל מקום ש-HEAD ביקר בו, כולל אחרי `reset --hard`. commit "אבוד" שורד בו כשבועיים.
+`reflog` הוא יומן של כל מקום ש-HEAD ביקר בו, כולל אחרי `reset --hard`. commit "אבוד" שורד בו לפחות 30 יום (ברירת המחדל של git).
 
 ```bash title="runs on: any shell"
 git reflog

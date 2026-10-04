@@ -21,12 +21,12 @@ sidebar:
 | # | Actor | צריך | Credential / identity | scope / role | איפה חי (לעולם לא ב-Git) | מה נשבר אם שגוי |
 |---|---|---|---|---|---|---|
 | 1 | job `publish` ב-CI | push של images | `CI_REGISTRY_USER` / `CI_REGISTRY_PASSWORD` (job token) | אוטומטי, מת עם ה-job | משתנה מוגדר-מראש, לא יוצרים כלום | `denied: access forbidden` (חסר `docker login`) |
-| 2 | job `promote` ב-CI | לקרוא `trident-ci`, **לכתוב** `trident-gitops` | `TRIDENT_GIT_TOKEN` (service account / PAT; access token בתשלום) | `read_repository` + `write_repository`; role Developer ומעלה | משתנה group CI/CD, **Mask**, בלי **Protect** אם ה-job רץ על branch לא מוגן | push נכשל 403; מצב Protect על `dev`: token ריק |
+| 2 | job `promote` ב-CI | לקרוא `trident-ci`, **לכתוב** `trident-gitops` | `TRIDENT_GIT_TOKEN` (service account / PAT; access token בתשלום) | `write_repository` (כולל קריאה) ל-gitops; role Developer על gitops, Reporter על `trident-ci` | משתנה group CI/CD, **Mask**, בלי **Protect** אם ה-job רץ על branch לא מוגן | push נכשל 403; מצב Protect על `dev`: token ריק |
 | 3 | GitLab (`include:`) | לקרוא את YAML של `trident-ci` | הגישה של המשתמש שהפעיל | member ב-`trident-ci` | - | `/trident-ci not found` (חסר `TRIDENT_GROUP`) |
 | 4 | Argo | לקרוא `trident-gitops` | identity לקריאה בלבד (deploy token / service account) | `read_repository`; Reporter | קבצי `username`/`token` ב-VM, Secret ב-namespace `argocd` | `repository not found`, `HTTP Basic: Access denied` |
 | 5 | Argo | לקרוא `trident-templates` | identity לקריאה בלבד | `read_repository`; Reporter | Secret נפרד ב-`argocd` | `ComparisonError`, `Unknown` |
 | 6 | **kubelet** בכל env | למשוך images | **deploy token** על `trident-source` | `read_registry` בלבד | Secret `kubernetes.io/dockerconfigjson` **בכל namespace** + `imagePullSecrets` | `ImagePullBackOff` |
-| 7 | ה-runner | להריץ jobs | registration token `glrt-` | project runner (ב-Free אין group runner); tag נכון | `/etc/gitlab-runner/config.toml` ב-VM | job תקוע, `no runner for tags` |
+| 7 | ה-runner | להריץ jobs | registration token `glrt-` | project runner (group runner אם הכפתור קיים; בתרגול ב-Free חסר); tag נכון | `/etc/gitlab-runner/config.toml` ב-VM | job תקוע, `no runner for tags` |
 | 8 | Postgres + signal-processor | סיסמת DB | קובץ סיסמה לכל env | - | Secret generic, מפתח `postgres_password`, מותקן כקובץ | Pod ב-`CrashLoopBackOff` / לא מתחבר |
 | 9 | Grafana | admin | קבצי credentials | - | Secret admin ב-`<NS>` של observability | Grafana לא עולה |
 | 10 | Ingress | TLS | CA + cert לכל host | - | Secret `tls` **בכל namespace** | cert שגוי / 404 |
@@ -41,11 +41,11 @@ sidebar:
 - **Mask ≠ Protect.** Mask מסתיר את הערך בלוגים; Protect מגביל את המשתנה ל-branches מוגנים.
 
 :::caution[מלכודת · קרה בתרגול]
-`HTTP Basic: Access denied` ב-`git ls-remote` של argo-reader על gitops, בעוד templates עבד. הניחוש "לתת לו Developer" שגוי (כיוון הפוך; קריאה דורשת Reporter). הסיבה: רק בוט ה-CI היה member ב-gitops. scope הוא פר-token (זהה לשני ה-repos), לכן ההבדל הוא חברות פר-project. תיקון: להוסיף את argo-reader ל-gitops כ-Reporter, בצד GitLab.
+`HTTP Basic: Access denied` על `gitops` ו-OK על `templates` עם אותו credential: חברות per project חסרה (מוסיפים Reporter), לא scope ולא "Developer". האבחון המלא: [gitlab/permissions](../../gitlab/permissions/#אבחון-403--access-denied-בגישה-ל-repo).
 :::
 
 :::caution[מלכודת · קרה בתרגול]
-`promote:dev` קיבל 403 אחרי שה-token הוגדר עם Protect. ה-branch `dev` אינו מוגן, אז המשתנה ריק שם. תיקון: Mask דלוק, Protect כבוי.
+`promote:dev` קיבל `403` כש-`TRIDENT_GIT_TOKEN` היה עם Protect ו-`dev` אינו branch מוגן: המשתנה ריק. Mask דלוק, Protect כבוי. פירוט: [gitlab/variables](../../gitlab/variables/#mask-מול-protect).
 :::
 
 ## איך מוודאים credential

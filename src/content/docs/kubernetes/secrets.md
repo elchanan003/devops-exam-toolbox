@@ -14,7 +14,7 @@ sidebar:
 
 :::caution[מלכודת · קרה בתרגול]
 פספוס חוזר (פעמיים, בלחץ): ב-staging `ImagePullBackOff`, וב-prod `secret ... not found` — בזמן ש-`kubectl get secret -A` הראה שה-Secret **קיים**. הוא היה קיים ב-namespace אחר.
-כלל: "עובד ב-A ולא ב-B" → חפש מה **שונה** — ה-namespace. "not found" → שם או namespace. התיקון: ליצור את ה-Secret ב-namespace החסר (ב-TRIDENT: `bash bootstrap/prepare-environment.sh <ENV>`).
+כלל: "עובד ב-A ולא ב-B" פירושו לחפש מה **שונה**, וה-namespace הוא החשוד הראשון. "not found": שם או namespace שגויים. התיקון: ליצור את ה-Secret ב-namespace החסר (ב-TRIDENT: `bash bootstrap/prepare-environment.sh <ENV>`).
 :::
 
 ```bash title="runs on: VM"
@@ -65,10 +65,10 @@ kubectl -n <NS> create secret tls <SECRET> --cert=<FILE>.crt --key=<FILE>.key
 
 ```bash title="runs on: VM"
 kubectl -n <NS> create secret generic <SECRET> --from-file=postgres_password=<FILE> \
-  --dry-run=client -o yaml | kubectl apply -f -
+  --dry-run=client -o yaml | kubectl apply --server-side --force-conflicts -f -
 ```
 
-`--dry-run=client -o yaml` מייצר את ה-YAML בלי לשלוח, ו-`apply` יוצר או מעדכן. את ה-namespace עצמו: `kubectl create namespace <NS> --dry-run=client -o yaml | kubectl apply -f -`.
+`--dry-run=client -o yaml` מייצר את ה-YAML בלי לשלוח, ו-`apply` יוצר או מעדכן. עם `--server-side` ערך ה-Secret לא נשמר ב-annotation `last-applied-configuration` (ב-`apply` רגיל הוא נשמר שם; [פירוט](../../bash/snippets/#secret-apply---server-side-כדי-לא-להדליף-ל-annotation)). את ה-namespace עצמו: `kubectl create namespace <NS> --dry-run=client -o yaml | kubectl apply -f -`.
 פונקציה מוכנה עם בדיקות קלט: [bash/snippets](../../bash/snippets/), וה-script המלא: [bash/templates](../../bash/templates/).
 
 ## מאונט כקובץ, לא כ-env

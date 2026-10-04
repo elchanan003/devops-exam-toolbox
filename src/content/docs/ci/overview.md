@@ -41,7 +41,7 @@ trident-gitops/apps/trident/versions/<ENV>.yaml   written by promote.sh (CI's on
 | predefined (GitLab) | `CI_COMMIT_BRANCH`, `CI_REGISTRY_IMAGE` | קיימים בכל job, אין מה ליצור |
 | group / project CI/CD variables | `TRIDENT_GROUP`, `TRIDENT_GIT_TOKEN` | נוצרים ב-UI: [gitlab/variables](../../gitlab/variables/) |
 | `variables:` ב-YAML | `SERVICES`, `IMAGE_REPO` | גלוי בקוד, לא ל-secrets |
-| dotenv מ-job קודם | `CANDIDATE` | רק ל-jobs ב-`needs` של ה-job שייצר |
+| dotenv מ-job קודם | `CANDIDATE` | מגיע ל-jobs מאוחרים; עם `needs` רק מה-jobs שמופיעים בו |
 | `variables:` ברמת job | `TARGET_ENV` | מחליף את הרמה הכללית |
 
 עדיפות כשיש אותו שם בכמה מקומות: project variable גובר על group variable. אל תסתמך על שאר הסדר; השתמש בשמות ייחודיים.
@@ -63,9 +63,9 @@ trident-gitops/apps/trident/versions/<ENV>.yaml   written by promote.sh (CI's on
 | `CI_REGISTRY_IMAGE` | `registry.gitlab.com/<GROUP>/<REPO>` | `IMAGE_REPO` |
 | `CI_REGISTRY_USER` | `gitlab-ci-token` | `docker login -u` |
 | `CI_REGISTRY_PASSWORD` | job token | `docker login --password-stdin` |
-| `CI_JOB_TOKEN` | token קצר חיים | אין push cross-project (`403`) אלא עם allowlist |
+| `CI_JOB_TOKEN` | token קצר חיים | לא מיועד ל-push ל-repo אחר (`403`) |
 
-`CI_JOB_TOKEN` לא יכול לדחוף ל-repo אחר; מי שדוחף ל-gitops הוא service account. allowlist: `Project → Settings → CI/CD → Job token permissions`.
+מי שדוחף ל-gitops הוא service account, לא `CI_JOB_TOKEN`. גישה cross-project של ה-job token נשלטת ב-`Project → Settings → CI/CD → Job token permissions`.
 
 **איך מוודאים** שמשתנה קיים: ב-job, `echo "$CI_COMMIT_BRANCH $CI_COMMIT_SHORT_SHA"` מדפיס ערכים. ה-log של job מציג גם בתחילתו את ה-runner ואת ה-tag שנבחר.
 

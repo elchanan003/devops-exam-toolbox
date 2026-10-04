@@ -18,7 +18,7 @@ sidebar:
 | namespace אחר | `<SERVICE>.<NS>.svc.cluster.local` | `redis.trident-dev.svc.cluster.local` |
 
 :::caution[מלכודת · קרה בתרגול]
-שם קצר עובד **רק באותו namespace**. פנייה ממרחב אחר (למשל מ-`trident-observability` אל `trident-dev`) דורשת FQDN מלא. באותו namespace מספיק `REDIS_HOST: "redis"`; בין namespaces: `redis.trident-dev.svc.cluster.local`.
+שם קצר עובד **רק באותו namespace**. פנייה מ-namespace אחר (למשל מ-`trident-observability` אל `trident-dev`) דורשת FQDN מלא. באותו namespace מספיק `REDIS_HOST: "redis"`; בין namespaces: `redis.trident-dev.svc.cluster.local`.
 :::
 
 ```bash title="runs on: VM"
@@ -94,7 +94,7 @@ curl --cacert <FILE> --resolve <HOST>:<PORT>:<VM_IP> https://<HOST>:<PORT>/info
 ## NetworkPolicy: default-deny ו-allow
 
 ב-Kubernetes ברירת המחדל שטוחה: כל Pod מדבר עם כל Pod. NetworkPolicy הופכת את זה ל-**allowlist**: קודם חוסמים הכול, ואז פותחים רק את מסלול הנתונים.
-מסלול הנתונים ב-TRIDENT: simulator → ingest-api → redis ← signal-processor → postgres.
+מסלול הנתונים ב-TRIDENT: `simulator → ingest-api → redis ← signal-processor → postgres`.
 
 ```yaml title="file: networkpolicies.yaml (ingress rules, one namespace)"
 apiVersion: networking.k8s.io/v1
@@ -155,7 +155,7 @@ kubectl -n <NS> get networkpolicy
 kubectl -n <NS> describe networkpolicy allow-redis-from-api-and-processor
 ```
 
-**איך מוודאים:** `dry-run` מדפיס `networkpolicy.networking.k8s.io/...` לכל מדיניות. בדיקה חיה: מ-Pod **אסור** (למשל simulator → redis) החיבור נכשל ב-timeout, ומ-Pod **מותר** (ingest-api → redis) הוא מצליח.
+**איך מוודאים:** `dry-run` מדפיס `networkpolicy.networking.k8s.io/...` לכל מדיניות. בדיקה חיה: מ-Pod **אסור** (למשל `simulator → redis`) החיבור נכשל ב-timeout, ומ-Pod **מותר** (`ingest-api → redis`) הוא מצליח.
 
 ```bash title="runs on: VM"
 kubectl -n <NS> exec deploy/acoustic-simulator -- python -c "import socket; socket.create_connection(('redis', 6379), 3)"   # must fail

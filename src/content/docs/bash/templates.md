@@ -431,7 +431,7 @@ git -C /tmp/gitops-test.git log -1 --format='%an <%ae> %s'         # the bot ide
 
 ## credential file writer
 
-כותב קובץ סוד נכון: הערך נקרא בלי הד, נשמר בלי newline, הקובץ 600 והתיקייה 700. אפשר להעביר כמה נתיבים בבת אחת.
+כותב קובץ credential נכון: הערך נקרא בלי הד, נשמר בלי newline, הקובץ 600 והתיקייה 700. אפשר להעביר כמה נתיבים בבת אחת.
 
 ```bash title="file: scripts/write-credential.sh"
 #!/usr/bin/env bash
@@ -483,7 +483,7 @@ cmp -s <TOKEN_FILE> <FILE> && echo "IDENTICAL - suspicious if these should diffe
 ```
 
 :::caution[מלכודת · קרה בתרגול]
-הבדיקה האחרונה תפסה בעיה אמיתית: קובץ ה-token היה זהה בייט-לבייט לקובץ ה-username. וה-script מצפה לשם קובץ מדויק (`username`, לא `user`): קרא את ה-comment שבראש ה-script שצורך את הקובץ. ראה גם [overview](../overview/#umask-077-chmod-600-printf-s--קובץ-סוד).
+הבדיקה האחרונה תפסה בעיה אמיתית: קובץ ה-token היה זהה בייט-לבייט לקובץ ה-username. וה-script מצפה לשם קובץ מדויק (`username`, לא `user`): קרא את ה-comment שבראש ה-script שצורך את הקובץ. ראה גם [overview](../overview/#umask-077-chmod-600-printf-s--קובץ-credential).
 :::
 
 אם ה-shell שלך הוא zsh: הרץ תמיד `bash scripts/write-credential.sh …`. בתוך ה-script `read -rs` עובד, אבל `read -p` ב-zsh נכשל.

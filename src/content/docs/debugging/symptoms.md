@@ -16,7 +16,7 @@ sidebar:
 |---|---|---|---|
 | `/trident-ci not found` (נתיב בלי group) | `TRIDENT_GROUP` לא מוגדר | GitLab: Settings, CI/CD, Variables של ה-group | להגדיר `TRIDENT_GROUP=<GROUP>` (path, לא display name), בלי Mask. [variables](../../gitlab/variables/) |
 | pipeline לא מתחיל | `include` לא מצליח; ה-branch לא `dev`/`main` (workflow rules); אין runner | GitLab: Pipelines, הודעת השגיאה | [ci/overview](../../ci/overview/) |
-| job תקוע ב-pending, `no runner for tags` | runner כבוי; tag לא תואם; runner בהיקף של project אחר | `sudo gitlab-runner list`; GitLab: Settings, CI/CD, Runners | להפעיל את ה-runner ל-project, `tags: [<TAG>]` זהה. [runners](../../gitlab/runners/) |
+| job תקוע ב-pending, `no runner for tags` | runner כבוי; tag לא תואם; runner בהיקף של project אחר | `sudo gitlab-runner list`; GitLab: Settings, CI/CD, Runners | להפעיל את ה-runner ל-project; ה-`tags:` ב-job זהה ל-tags של ה-runner. [runners](../../gitlab/runners/) |
 | `docker build` לא מוצא את החבילה המשותפת | build context הוא `services/<SERVICE>` במקום ה-parent | log של `build` | context = התיקייה שמכילה את הקוד המשותף. [docker](../../docker/overview/) |
 | `Temporary failure in name resolution` ב-`pip install` | DNS ב-build (resolv.conf מצביע ל-127.0.0.53) | `cat /etc/docker/daemon.json` | [env-cards](../env-cards/#docker-build-נופל-ב-dns) |
 | `blob unknown to registry` ב-push | containerd image store (Docker 29) | `docker info --format '{{.Driver}}'` | [env-cards](../env-cards/#docker-push-נכשל-עם-blob-unknown) |
@@ -26,10 +26,6 @@ sidebar:
 | `credential file is not readable and non-empty: <FILE>` | שם קובץ שגוי (`user` במקום `username`); קובץ ריק; token הוא העתק של ה-username | `ls -l <FILE>`; `wc -c <FILE>` | לקרוא את ה-header של הסקריפט לשמות המדויקים; `chmod 600`. [bash/snippets](../../bash/snippets/) |
 | job הרץ run ישן | קוראים pipeline לא נכון | ה-`CANDIDATE` ב-log: branch + תאריך | לפתוח את ה-pipeline העדכני |
 | job ידני `promote:prod` לא מתקדם | נלחץ על pipeline ישן; `needs` לא עבר | GitLab: Pipelines | ה-candidate הוא של ה-pipeline שלו, לפי תכנון. [ci/patterns](../../ci/patterns/) |
-
-:::caution[מלכודת · קרה בתרגול]
-`no runner for tags trident` ב-job של `trident-ci` הוא צפוי כשה-runner הוא project runner של `trident-source` בלבד. תיקון: להפעיל אותו גם ל-`trident-ci`.
-:::
 
 ## Git ו-auth
 
@@ -90,7 +86,7 @@ sidebar:
 |---|---|---|---|
 | `404` מה-ingress | `ingressClassName` לא `nginx`; hostname שגוי; path | `kubectl get ingress -n <NS>` | לתקן values. [kubernetes/networking](../../kubernetes/networking/) |
 | cert שגוי / שגיאת TLS | שם ה-Secret ב-`extraTls`; Secret לא קיים ב-namespace | `kubectl get secret <SECRET> -n <NS>` | hostname מופיע פעמיים (`hosts[].hostname` ו-`extraTls[].hosts`), שנה את שניהם |
-| אין חיבור ל-host | חסר ב-`/etc/hosts`; NodePort שגוי | `curl -k --resolve <HOST>:<PORT>:<VM_IP> https://<HOST>:<PORT>/info` | להוסיף ל-`/etc/hosts` או `--resolve` |
+| אין חיבור ל-host | חסר ב-`/etc/hosts`; NodePort שגוי (גלה עם `kubectl -n ingress-nginx get svc`, המספר אחרי `443:`) | `curl -k --resolve <HOST>:<PORT>:<VM_IP> https://<HOST>:<PORT>/info` | להוסיף ל-`/etc/hosts` או `--resolve` |
 
 ## Data
 

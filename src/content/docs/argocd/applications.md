@@ -69,7 +69,7 @@ spec:
 
 שים לב: שני ה-`repoURL` משתמשים ב-`<REPO>` אבל הם **שני repos שונים**: charts מ-`templates`, ערכים מ-`gitops`.
 
-- **סדר `valueFiles`:** `base` → `<ENV>` → `versions/<ENV>`. המאוחר מנצח; maps מתמזגים לפי מפתח, lists מוחלפים.
+- **סדר `valueFiles`:** `base → <ENV> → versions/<ENV>`. המאוחר מנצח; maps מתמזגים לפי מפתח, lists מוחלפים.
 - **source הערכים:** `ref: values`, ב-`gitops`, **בלי `path`**. השם `values` הוא מה שמופיע ב-`$values/`.
 - `versions/<ENV>.yaml` נכתב רק על ידי `promote.sh`. אם הוא `""` (מעולם לא עבר promote), הרינדור נכשל: ראה [ComparisonError](../operate/#comparisonerror-קוראים-מלמטה-למעלה).
 - `CreateNamespace=false` (או השמטה) כשה-namespace נוצר על ידי script ה-bootstrap, יחד עם ה-Secrets שה-Pods צריכים לפני sync.

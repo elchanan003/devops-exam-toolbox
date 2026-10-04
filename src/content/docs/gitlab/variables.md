@@ -42,8 +42,8 @@ Project (or Group) → Settings → CI/CD → Variables → Expand → Add varia
 |---|---|---|
 | מה עושה | מחליף את הערך ב-`[MASKED]` ב-job log | ה-variable קיים **רק** ב-pipelines של branch/tag מוגנים |
 | מה לא עושה | לא חוסם גישה, לא מצפין | לא מסתיר ב-log |
-| מגבלות | ערך ≥ 8 תווים, שורה אחת, תווים מוגבלים (base64-like) | תלוי בהגדרת protected branches |
-| מתאים ל | כל secret | secret ש-רק `main` (פרסום) צריך |
+| מגבלות | ערך ≥ 8 תווים, שורה אחת, בלי רווחים | תלוי בהגדרת protected branches |
+| מתאים ל | כל secret | secret ש-רק `main` (פרסום) צריך לראות |
 
 :::caution[מלכודת · קרה בתרגול]
 `TRIDENT_GIT_TOKEN` עם **Protect ON** ו-`dev` שאינו branch מוגן: ה-variable **ריק** ב-job של `dev`, וה-push של `promote:dev` מחזיר `403`.
@@ -51,7 +51,7 @@ Project (or Group) → Settings → CI/CD → Variables → Expand → Add varia
 בנוסף, בהתחלה הובן ש-Mask הוא "הפניה לשם". Mask מסתיר ערך ב-log.
 :::
 
-**איך מוודאים** (בלי להדפיס את הסוד), בתוך job:
+**איך מוודאים** (בלי להדפיס את הערך), בתוך job:
 
 ```yaml title="file: .gitlab-ci.yml"
 var-check:

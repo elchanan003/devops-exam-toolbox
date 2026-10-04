@@ -34,7 +34,7 @@ helm show values <CHART_DIR> | grep -n -B2 -A12 '^storage:'
 ## nxs-universal-chart: גיליון עזר
 
 מפתחות ברמה העליונה שאתה פוגש: `releasePrefix`, `defaultImageTag`, `generic`, `configMaps`, `deployments`, `services`, `ingresses`, `networkPolicies`.
-`releasePrefix: "-"` גורם לאובייקטים לקבל בדיוק את השם של המפתח שלהם (`deployments.ingest-api` → Deployment בשם `ingest-api`).
+`releasePrefix: "-"` גורם לאובייקטים לקבל בדיוק את השם של המפתח שלהם (`deployments.ingest-api` נותן Deployment בשם `ingest-api`).
 
 ### generic ו-imageRepository
 
@@ -211,7 +211,7 @@ storage:
 `grep -E '^kind: StatefulSet|secretName' /tmp/render.yaml` מראה StatefulSet ו-`secretName: trident-postgres`.
 
 :::caution[מלכודת · קרה בתרגול]
-`storage` מולא עם `requestedSize: 1Gi` בלבד, ללא `className`. ה-PVC נוצר בלי StorageClass ו-`postgres-0` נשאר Pending. התיקון הוא ב-**values** (ב-Git), לא ב-`kubectl edit`.
+בלי `className` ה-PVC נוצר בלי StorageClass ו-`postgres-0` נשאר Pending. התיקון ב-**values** (ב-Git), לא ב-`kubectl edit`. אבחון מלא: [storage-probes](../../kubernetes/storage-probes/#pod-pending-בגלל-pvc-סולם-האבחון).
 :::
 
 ## redis (groundhog2k 2.4.7)

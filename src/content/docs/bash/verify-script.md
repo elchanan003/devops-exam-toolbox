@@ -117,7 +117,7 @@ out="$(helm template <RELEASE> <CHART_DIR> -f <FILE> -f <FILE>)"   # capture fir
 grep -q ":<CANDIDATE>" <<<"$out" && echo "tag injected"
 ```
 
-למה לשמור למשתנה ולא `helm template … | grep -q`: `grep -q` יוצא ברגע שמצא, וה-`helm` שכותב לצינור מקבל SIGPIPE. עם `pipefail` ה-pipeline כולו נחשב ככישלון:
+למה לשמור למשתנה ולא `helm template … | grep -q`: `grep -q` יוצא ברגע שמצא, וה-`helm` שכותב ל-pipe מקבל SIGPIPE. עם `pipefail` ה-pipeline כולו נחשב ככישלון:
 
 ```bash title="runs on: any shell"
 set -o pipefail

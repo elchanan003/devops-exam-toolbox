@@ -1,6 +1,6 @@
 ---
 title: Observability — Prometheus ו-Grafana משותפים
-description: Prometheus אחד ו-Grafana אחד שסורקים שלוש סביבות, label ה-namespace, סוד ה-admin, ingress, dashboard ב-kustomize ותקלות נפוצות.
+description: Prometheus אחד ו-Grafana אחד שסורקים שלוש סביבות, label ה-namespace, Secret ה-admin, ingress, dashboard ב-kustomize ותקלות נפוצות.
 sidebar:
   order: 1
 ---
@@ -31,13 +31,14 @@ scrapeConfigs:
 ```
 
 - שתי פעולות `keep`: רק Pods עם label `app.kubernetes.io/part-of=trident`, ורק container port ששמו `ops` או `http`. כל השאר נזרק.
-- שורת `__meta_kubernetes_namespace` → `namespace` היא מה שמאפשר ל-dashboard לבחור סביבה. בלעדיה אין הבדל בין dev ל-prod.
-- נקודות בשם label הופכות ל-`_` ב-`__meta_kubernetes_pod_label_*` (`trident.dev/service` → `trident_dev_service`).
+- השורה `__meta_kubernetes_namespace → namespace` היא מה שמאפשר ל-dashboard לבחור סביבה. בלעדיה אין הבדל בין dev ל-prod.
+- נקודות בשם label הופכות ל-`_` ב-`__meta_kubernetes_pod_label_*` (`trident.dev/service` הופך ל-`trident_dev_service`).
 - גילוי דורש RBAC: `rbac: {create: true}` ו-`serviceAccounts: {server: {create: true}}` ב-values של ה-chart.
 
 ## לוודא שה-label קיים
 
 ```bash title="runs on: VM"
+kubectl -n <NS> get svc                                   # find the Prometheus Service name
 kubectl -n <NS> port-forward svc/prometheus 9090:9090
 ```
 
@@ -49,7 +50,7 @@ curl -s 'http://localhost:9090/api/v1/query' --data-urlencode 'query=count by (n
 
 **איך מוודאים:** `data.result` מכיל רשומה לכל `namespace` של סביבה, כל אחת עם ערך גדול מ-0. חסרה סביבה = היא לא נסרקת (label, פורט, RBAC או Pods לא רצים). ה-`<NS>` בפקודה הראשונה הוא ה-namespace של ה-stack (ב-TRIDENT: `trident-observability`).
 
-אותו דבר ב-UI של Prometheus: Status → Targets (כל target ו-`State`), ו-Graph לשאילתה.
+אותו דבר ב-UI של Prometheus: `Status → Targets` (כל target ו-`State`), ו-Graph לשאילתה.
 
 ## Grafana: admin מ-Secret קיים
 
@@ -106,7 +107,7 @@ datasources:
             - {name: TraceID, datasourceUid: tempo, url: '$${__value.raw}'}
 ```
 
-**איך מוודאים:** ב-Grafana, Connections → Data sources → Prometheus → Save & test. מופיע `Successful`. אם ה-URL של trace ריק, בדוק שה-`$$` לא נשאר `$`.
+**איך מוודאים:** ב-Grafana, `Connections → Data sources → Prometheus → Save & test`. מופיע `Successful`. אם ה-URL של trace ריק, בדוק שה-`$$` לא נשאר `$`.
 
 ## dashboard דרך kustomize
 
@@ -149,7 +150,7 @@ kubectl kustomize <FILE>
 | סימפטום | סיבה | בדיקה |
 |---|---|---|
 | ה-dashboard ריק או מערבב סביבות | relabel הוריד את `namespace`, או השורה חסרה | `count by (namespace) (up)` |
-| אין targets בכלל | typo ב-label (`part_of` במקום `part-of` ב-regex source) או בשם הפורט | Status → Targets; `kubectl -n <NS> get pods --show-labels` |
+| אין targets בכלל | typo ב-label (`part_of` במקום `part-of` ב-regex source) או בשם הפורט | `Status → Targets`; `kubectl -n <NS> get pods --show-labels` |
 | רק חלק מהסביבות | `namespaces.names` חסר סביבה, או Pods לא רצים | אותה שאילתה |
 | Targets ב-`403`/ריקים | אין RBAC לגילוי Pods | `rbac.create: true` ב-values |
 | Application `observability` אדום | namespace או Secret חסרים | `kubectl get ns`; הרץ את `prepare-observability.sh` |

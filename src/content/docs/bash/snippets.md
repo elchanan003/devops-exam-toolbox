@@ -6,7 +6,7 @@ sidebar:
 ---
 
 :::note[בקצרה]
-חלקים קטנים להרכבת script: ארגומנטים, בדיקות קלט, kubectl אידמפוטנטי, קריאת סודות בלי להדפיס, polling, helpers, ניקוי.
+חלקים קטנים להרכבת script: ארגומנטים, בדיקות קלט, kubectl אידמפוטנטי, קריאת ערכי Secret בלי להדפיס, polling, helpers, ניקוי.
 Script שלם ומוכן: [templates](../templates/). הסבר על כל תחביר: [overview](../overview/).
 :::
 
@@ -92,10 +92,10 @@ done
 kubectl create namespace <NS> --dry-run=client -o yaml | kubectl apply -f -
 kubectl -n <NS> create secret generic <SECRET> \
   --from-file=<KEY>=<TOKEN_FILE> \
-  --dry-run=client -o yaml | kubectl apply -f -
+  --dry-run=client -o yaml | kubectl apply --server-side --force-conflicts -f -
 ```
 
-`--dry-run=client -o yaml` מדפיס את ה-YAML שהיה נוצר ולא יוצר כלום. `kubectl apply -f -` מחיל אותו, ויוצר או מעדכן.
+`--dry-run=client -o yaml` מדפיס את ה-YAML שהיה נוצר ולא יוצר כלום. `kubectl apply -f -` מחיל אותו, ויוצר או מעדכן. ל-Secret משתמשים ב-`--server-side` (הסיבה בסעיף הבא); ל-namespace `apply` רגיל מספיק.
 
 **איך מוודאים:** מריצים את אותה שורה פעמיים. פעם ראשונה: `created`. שנייה: `unchanged` (או `configured`), בלי שגיאה. את שני הסוגים, `docker-registry` ו-`tls`, ראה ב-[kubernetes/secrets](../../kubernetes/secrets/).
 
@@ -151,7 +151,7 @@ val=
 **איך מוודאים:** שתי השורות `key has a value` ו-`matches the file` מודפסות. אם השנייה חסרה, ה-Secret מכיל ערך אחר מהקובץ (למשל newline בסוף).
 
 :::caution[מלכודת]
-`echo "$val"`, `kubectl get secret -o yaml` (מציג base64, שהוא לא הצפנה), ו-`set -x` כולם מציגים את הסוד ב-terminal וב-logs של CI. אל תשתמש בהם כדי "לבדוק".
+`echo "$val"`, `kubectl get secret -o yaml` (מציג base64, שהוא לא הצפנה), ו-`set -x` כולם מציגים את הערך ב-terminal וב-logs של CI. אל תשתמש בהם כדי "לבדוק".
 :::
 
 ## `wait_for` — המתנה עם timeout

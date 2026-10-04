@@ -167,10 +167,10 @@ docker info --format '{{.Driver}}'
 **איך מוודאים:** `jq` מדפיס את ה-JSON (תקין), ו-`.Driver` הוא `overlay2`.
 
 :::danger[זהירות]
-מעבר בין stores **מרוקן** את ה-images הקיימים (כל store הוא מאגר נפרד). אחרי הוספת `containerd-snapshotter: false` ה-images שנבנו קודם לא נראים. מריצים מחדש את **כל** ה-pipeline (למשל commit ריק ל-`dev`), לא רק retry ל-`publish`.
+מעבר בין stores **מרוקן** את ה-images הקיימים (לכל store יש אחסון נפרד). אחרי הוספת `containerd-snapshotter: false` ה-images שנבנו קודם לא נראים. מריצים מחדש את **כל** ה-pipeline (למשל commit ריק ל-`dev`), לא רק retry ל-`publish`.
 :::
 
-אם Docker דחה את ההגדרה: `docker buildx build --push` מאחד build ו-push (דגל `--push` אומת). תקצירי שני הכרטיסים נמצאים ב-[debugging/env-cards](../../debugging/env-cards/); זה הדף עם הפירוט המלא.
+אם Docker דחה את ההגדרה: `docker buildx build --push` מאחד build ו-push (דגל `--push` אומת). התקציר של שני הכרטיסים (לצד כרטיסי סביבה אחרים): [debugging/env-cards](../../debugging/env-cards/).
 
 :::tip[עיקרון]
 כשל ב-`docker build` / `push` בלי שינוי בקוד: קודם שאל "קוד או סביבה". DNS, `Cannot connect to the Docker daemon` ו-`blob unknown` הם סביבה. מתודה: [debugging/overview](../../debugging/overview/).

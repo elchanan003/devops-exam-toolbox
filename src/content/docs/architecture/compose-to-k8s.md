@@ -14,7 +14,7 @@ sidebar:
 
 | ב-Compose | ב-Kubernetes | איפה זה נוחת ב-values (TRIDENT) |
 |---|---|---|
-| `env_file: ./config/app.env` | ConfigMap + `envFrom` | `configMaps.<NAME>.data` ו-`containers[].envConfigmaps: [...]` |
+| `env_file: ./config/app.env` | ConfigMap + `envFrom` | `configMaps.my-config.data` ו-`containers[].envConfigmaps: [...]` |
 | `environment:` / `x-identity` (anchor) | ConfigMap של identity | `configMaps.trident-identity.data` (`TRIDENT_ENV` ב-`<ENV>.yaml`, `TRIDENT_VERSION: "{{ .Values.defaultImageTag }}"`) |
 | `secrets:` | Secret **כ-volume** (קובץ) | `extraVolumes: [{name, secret: {secretName}}]` + `volumeMounts` ; ב-postgres: `extraSecrets: [{name, mountPath}]` |
 | קובץ config ב-mount (`sensors.json`) | ConfigMap כ-volume | `configMaps.trident-sensors.data."sensors.json"` + `extraVolumes` (configMap) + `volumeMounts` עם `readOnly: true` |
@@ -23,8 +23,8 @@ sidebar:
 | `tmpfs` | `emptyDir` | redis `storage: {}` |
 | `healthcheck` | probes | `startupProbe` + `livenessProbe` על `/live`, `readinessProbe` על `/ready` |
 | `depends_on` | **אין מקביל** | readiness + retries; סדר עלייה אינו readiness |
-| `networks` | NetworkPolicy (SHOULD) | `networkPolicies.<NAME>`; דורש CNI שאוכף (Canal) |
-| `ports:` | Service + Ingress | `services.<NAME>`; `ingresses.<NAME>` (רק השירות החיצוני) |
+| `networks` | NetworkPolicy (SHOULD) | `networkPolicies.my-policy`; דורש CNI שאוכף (Canal) |
+| `ports:` | Service + Ingress | `services.<SERVICE>`; `ingresses.<SERVICE>` (רק השירות החיצוני) |
 | `mem_limit` | `resources.limits.memory` | בכל container |
 | `image: x:${VERSION}` | image + tag | `image: "{{ .Values.generic.imageRepository }}/<SERVICE>"`, `imageTag: "{{ .Values.defaultImageTag }}"` |
 | `command:` | `command` | `containers[].command` |

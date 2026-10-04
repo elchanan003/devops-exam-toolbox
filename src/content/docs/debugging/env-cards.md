@@ -6,43 +6,22 @@ sidebar:
 ---
 
 :::note[בקצרה]
-באגי **סביבה** הם לא באגי קוד: ה-pipeline נכון והמכונה לא. מכירים אותם לפי הטקסט. הפירוט המלא ב-[docker/overview](../../docker/overview/); כאן סיכום להחלטה מהירה.
+באגי **סביבה** הם לא באגי קוד: ה-pipeline נכון והמכונה לא. מכירים אותם לפי הטקסט. סיכום להחלטה מהירה; פירוט הפקודות של Docker ב-[docker/overview](../../docker/overview/).
 :::
 
 ## Docker build נופל ב-DNS
 
 - **סימפטום:** `Temporary failure in name resolution` ב-`pip install` בתוך `docker build`.
 - **סיבה:** `/etc/resolv.conf` מצביע ל-stub של systemd-resolved (`127.0.0.53`), שלא נגיש מתוך container של build.
-- **תיקון:** להגדיר `dns` ב-`/etc/docker/daemon.json` ולהפעיל מחדש את Docker (דורש sudo).
-
-```json title="file: /etc/docker/daemon.json"
-{"dns": ["192.168.242.2", "8.8.8.8"]}
-```
-
-```bash title="runs on: VM"
-sudo systemctl restart docker
-```
-
-**איך מוודאים:** `docker build` מסיים את שלב `pip install`. את כתובת ה-DNS של ה-uplink רואים ב-`resolvectl status`; הכתובת בדוגמה היא של ה-VM בתרגול.
+- **תיקון:** להגדיר `dns` ב-`/etc/docker/daemon.json` ולהפעיל מחדש את Docker (דורש sudo). הפקודות המדויקות, כולל איך מוצאים את כתובת ה-DNS: [docker/overview](../../docker/overview/#כרטיס-סביבה-1-dns-ב-docker-build).
 
 ## docker push נכשל עם blob unknown
 
 - **סימפטום:** ה-image הראשון נדחף, השני נכשל: `blob unknown to registry`.
 - **סיבה:** ב-Docker 29 ברירת המחדל היא containerd image store, ו-cross-repo mount שלו שבור מול registry של gitlab.com.
-- **תיקון:** לכבות את `containerd-snapshotter` ב-`daemon.json` (קוד ה-pipeline לא משתנה), restart.
+- **תיקון:** לכבות את `containerd-snapshotter` ב-`daemon.json` (קוד ה-pipeline לא משתנה). **מזגו** את המפתח לקובץ הקיים ואל תדרסו אותו; ואז מריצים את ה-pipeline המלא מחדש, כי המעבר מרוקן את ה-images. פירוט: [docker/overview](../../docker/overview/#כרטיס-סביבה-2-blob-unknown-to-registry-ב-push).
 
-```json title="file: /etc/docker/daemon.json"
-{"dns": ["192.168.242.2", "8.8.8.8"], "features": {"containerd-snapshotter": false}}
-```
-
-```bash title="runs on: VM"
-sudo systemctl restart docker
-docker info --format '{{.Driver}}'
-```
-
-**איך מוודאים:** `overlay2`. המעבר מרוקן את ה-image store, אז מריצים את ה-pipeline המלא מחדש (commit ריק ל-branch), לא רק retry של `publish`.
-
-:::caution[מלכודת · קרה בתרגול]
+:::caution[מלכודת]
 שני הבאגים האלה הם הכרטיסים הסבירים ביותר על VM עם Docker 29 ו-systemd-resolved. שניהם סביבה: אל תשנה את ה-Dockerfile.
 :::
 
@@ -62,7 +41,7 @@ chmod +x <FILE>
 ## runner: scope ו-tag
 
 - **סימפטום:** job תקוע ב-pending או `no runner for tags`.
-- **סיבה:** ה-runner צריך **גם** scope תואם **וגם** tag תואם. ב-Free אין group runners, ה-runner הוא של project אחד.
+- **סיבה:** ה-runner צריך **גם** scope תואם **וגם** tag תואם. בתרגול ב-Free לא היה group runner, ה-runner היה של project אחד.
 - **תיקון:** להפעיל את ה-runner ל-project הנוסף; לא להריץ `gitlab-runner run` (ה-service כבר רץ; רק `register`).
 
 ```bash title="runs on: VM"
@@ -91,6 +70,6 @@ sudo -u gitlab-runner bash -lc 'echo $KUBECONFIG; ls ~/.kube 2>&1'
 
 **איך מוודאים:** אין kubeconfig למשתמש ה-runner.
 
-:::caution
+:::caution[מלכודת]
 אל תריץ `docker system prune` ואל תשנה `COMPOSE_PROJECT_NAME` ב-VM משותף; כלים ו-cleanup מסתמכים על שם ה-project.
 :::

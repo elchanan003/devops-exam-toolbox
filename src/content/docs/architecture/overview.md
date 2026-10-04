@@ -77,7 +77,7 @@ kubelet pulls the image with Secret (deploy token, read_registry) -> Pod runs
 | push ל-`main` | `promote:staging` אוטומטי | STAGING |
 | לחיצה ידנית על `promote:prod` | אותו pipeline, אותו `$CANDIDATE`, בלי build מחדש | PROD |
 
-- ה-candidate הוא מחרוזת `<BRANCH>-<YYYYMMDD>-<SHA>`, מחושבת **פעם אחת** ב-job `candidate` ועוברת ב-dotenv ל-jobs הבאים (`needs`).
+- ה-candidate הוא מחרוזת `<BRANCH>-YYYYMMDD-<SHA>`, מחושבת **פעם אחת** ב-job `candidate` ועוברת ב-dotenv ל-jobs הבאים (`needs`).
 - ה-job הידני מקדם את ה-candidate של ה-pipeline שלו, לא "מה שנמצא עכשיו ב-STAGING".
 - שני שערים: **CI** שולט במה שנכנס ל-Git (הכפתור הידני); **Argo** תמיד אוטומטי. אין syncPolicy שונה ל-prod.
 - מצב יציב תקין: `DEV = dev-C`, `STAGING = main-B`, `PROD = main-A`.

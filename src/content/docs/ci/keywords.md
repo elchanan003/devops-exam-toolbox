@@ -10,7 +10,7 @@ reference למילות המפתח שמופיעות ב-pipeline של TRIDENT. ק�
 תבניות מלאות שמשלבות אותן: [patterns](../patterns/). בסיס ה-CI: [overview](../overview/).
 :::
 
-## טבלה: מילה → מה עושה
+## טבלה: מילה ומה היא עושה
 
 | מילה | רמה | מה עושה | מלכודת |
 |---|---|---|---|
@@ -24,10 +24,10 @@ reference למילות המפתח שמופיעות ב-pipeline של TRIDENT. ק�
 | `before_script` | job / default | רץ לפני `script` באותו shell | כשל = ה-job נכשל |
 | `script` | job | הפקודות | כל פריט `-` הוא פקודה נפרדת |
 | `needs` | job | גרף תלות + קבלת artifacts | בלי `needs` ה-job מחכה לכל ה-stage הקודם |
-| `artifacts: reports: dotenv` | job | מייצא variables ל-jobs מאוחרים | רק ל-jobs ב-`needs` |
+| `artifacts: reports: dotenv` | job | מייצא variables ל-jobs מאוחרים | עם `needs`: רק מה-jobs שמופיעים בו |
 | `rules` | job | תנאי הרצה | `if` על משתנה; ללא match = ה-job לא נוצר |
 | `when: manual` | job / rules | נדרש click | ה-pipeline לא נחסם בגללו |
-| `environment` | job | רושם deployment | מופיע ב-Operate → Environments |
+| `environment` | job | רושם deployment | מופיע ב-`Operate → Environments` |
 | `resource_group` | job | מונע ריצה במקביל | jobs ברמה זו ירוצו בטור |
 | `tags` | job | בוחר runner | חייב להתאים ל-runner |
 
@@ -57,6 +57,7 @@ variables:
   SERVICES: "acoustic-simulator ingest-api signal-processor"
   IMAGE_REPO: "$CI_REGISTRY_IMAGE"
   GITOPS_REPO: "$CI_SERVER_HOST/$TRIDENT_GROUP/trident-gitops.git"
+  CI_REPO: "$CI_SERVER_HOST/$TRIDENT_GROUP/trident-ci.git"
 ```
 
 `tags` חייב להתאים ל-runner (ראה [gitlab/runners](../../gitlab/runners/)). `variables` יכול להפנות למשתנים אחרים עם `$`.

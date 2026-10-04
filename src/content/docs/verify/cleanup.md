@@ -41,6 +41,7 @@ kubectl get secret -n argocd -l argocd.argoproj.io/secret-type=repository
 ## רצף האידמפוטנטיות
 
 ```bash title="runs on: VM"
+# script paths as in your project (bash/templates uses scripts/ and bootstrap/)
 bash verify.sh && bash cleanup.sh && bash verify-clean.sh && bash cleanup.sh && bash verify-clean.sh
 ```
 

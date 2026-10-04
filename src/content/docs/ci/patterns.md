@@ -103,14 +103,7 @@ works:
 
 ## YAML quoting של `:`
 
-```yaml title="file: .gitlab-ci.yml"
-quoted:
-  script:
-    - 'echo "TODO build $CANDIDATE"; exit 1'
-    - 'echo "step: publish"'
-```
-
-פריט עם `: ` (נקודתיים+רווח) צריך מרכאות סביב כולו, אחרת YAML הופך אותו ל-map. במקרה של `"` בתוך הפקודה, שמים מרכאות בודדות סביב הפריט. כללים מלאים: [keywords](../keywords/).
+פריט script עם `: ` (נקודתיים+רווח) חייב מרכאות סביב כולו. הכללים והדוגמה: [keywords](../keywords/#yaml-quoting-של-).
 
 ## promote family: extends + rules
 
@@ -190,10 +183,11 @@ check:
 ה-push של promote חייב לעבור גם כשה-tag כבר כתוב: בלי שינוי אין commit.
 
 ```bash title="runs on: CI job"
-git add apps/trident/versions/<ENV>.yaml
+git add <DIR>/<ENV>.yaml
+# TRIDENT: git add apps/trident/versions/<ENV>.yaml
 if ! git diff --cached --quiet; then
   git commit -q -m "promote(<ENV>): <CANDIDATE>"
-  git push -q origin main
+  git push -q origin HEAD:<BRANCH>
 fi
 git rev-parse HEAD
 ```

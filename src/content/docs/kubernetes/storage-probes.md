@@ -68,9 +68,11 @@ storage:
 
 ```bash title="runs on: VM"
 kubectl -n <NS> describe pvc postgres-data-postgres-0   # Pending, no Volume: nothing bound yet
-kubectl -n <NS> delete pvc postgres-data-postgres-0     # recreated by the StatefulSet from the new values
+kubectl -n <NS> delete pvc postgres-data-postgres-0     # recreated by the StatefulSet
 kubectl -n <NS> get pvc,pods -w                         # Ctrl+C when Bound / Running
 ```
+
+אם ה-PVC החדש שוב נוצר בלי class, ה-StatefulSet הקיים עדיין נושא את ה-`volumeClaimTemplates` הישן: מחק גם את ה-StatefulSet (`kubectl -n <NS> delete statefulset <SERVICE>`; Argo יוצר אותו מחדש מה-values) ואז את ה-PVC. הצעד הזה לא נבדק כאן מול cluster חי.
 
 :::danger[זהירות]
 מחיקת PVC עם data אמיתי מוחקת אותו (`RECLAIMPOLICY: Delete`). כאן זה בטוח רק כי ה-PVC מעולם לא נקשר. קודם `describe pvc` ובדוק שהוא Pending ללא `Volume`.

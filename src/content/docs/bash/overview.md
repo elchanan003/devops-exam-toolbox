@@ -56,7 +56,7 @@ git diff --cached --quiet; echo "rc=$?"   # rc=1: there IS a staged change
 git add "$FILE"
 if ! git diff --cached --quiet; then      # exit 1 = there is a change
   git commit -q -m "promote($ENV): $CANDIDATE"
-  git push -q origin main
+  git push -q origin "HEAD:$BRANCH"
 fi
 git rev-parse HEAD                        # outside the if: always runs
 ```
@@ -168,10 +168,10 @@ echo "[$TRIDENT_GITOPS_URL]"; env | grep TRIDENT_          # is it set in THIS s
 ```
 
 :::caution[מלכודת · קרה בתרגול]
-`--install` נכשל עם `!URL_VAR: export TRIDENT_GITOPS_URL=...`, וגם `echo` וגם `env` החזירו ריק. המשתנים הוגדרו כ-GitLab CI/CD variables, והם קיימים **רק בתוך jobs**. הרצה ידנית ב-VM צריכה `export`. התיקון: `export` ב-terminal, ומחיקת ה-variables המיותרים מ-GitLab.
+`--install` נכשל עם `!URL_VAR: export TRIDENT_GITOPS_URL=...` כי המשתנה הוגדר כ-GitLab CI/CD variable, והוא קיים **רק בתוך jobs**. הרצה ידנית ב-VM צריכה `export` (ראה [איפה זה רץ](../../architecture/overview/#איפה-זה-רץ-הטבלה-הקנונית)).
 :::
 
-## `read -rs` — קריאת סוד בלי להציג אותו
+## `read -rs` — קריאת token בלי להציג אותו
 
 `-s` שקט (לא מציג מה שמקלידים), `-r` raw (לא מפרש `\` כתו בריחה).
 
@@ -186,7 +186,7 @@ echo 'a\b' | bash -c 'read -r T; echo "$T"'   # a\b
 ב-zsh (ברירת המחדל ב-Mac) `read -p "prompt: " VAR` **לא עובד**: `zsh:read:1: -p: no coprocess`, והמשתנה נשאר ריק. ב-bash `-p` הוא prompt. הצורה שעובדת בשניהם: `read -rs VAR` בלי `-p`, והודעה נפרדת עם `printf`. ב-zsh `%` בסוף הפלט אומר "אין newline בסוף".
 :::
 
-## `umask 077`, `chmod 600`, `printf '%s'` — קובץ סוד
+## `umask 077`, `chmod 600`, `printf '%s'` — קובץ credential
 
 שלושה דברים נכונים לקובץ שמחזיק token: הרשאות קובץ, הרשאות תיקייה, ותוכן בלי שורה חדשה.
 

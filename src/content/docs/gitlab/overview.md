@@ -53,7 +53,7 @@ Create project inside the group:
   → Create project
 ```
 
-ניסוחי התפריט משתנים קצת בין גרסאות (Groups מול Your work, "New project/repository" מול "New project"). המבנה הקבוע: group → New project → Create blank project.
+ניסוחי התפריט משתנים קצת בין גרסאות (Groups מול Your work, "New project/repository" מול "New project"). המבנה הקבוע: `group → New project → Create blank project`.
 
 **איך מוודאים:** כפתור **Code** בדף ה-project מציג את כתובות ה-clone עם ה-path הנכון.
 

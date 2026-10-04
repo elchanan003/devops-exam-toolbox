@@ -83,7 +83,7 @@ git log --oneline HEAD..origin/main
 | רוצה לשמור אותו בצד | `git branch backup` לפני כל reset |
 
 :::danger[זהירות]
-`git reset --hard` זורק שינויים לא שמורים. לפני: `git status` נקי, ו-`git branch backup` לשמירת ה-commit. גם בלי backup ה-commit שורד ב-`git reflog` כשבועיים ([undo](../undo/#לשחזר-commit-שאבד-reflog)).
+`git reset --hard` זורק שינויים לא שמורים. לפני: `git status` נקי, ו-`git branch backup` לשמירת ה-commit. גם בלי backup ה-commit שורד ב-`git reflog` (ברירת המחדל: לפחות 30 יום) ([undo](../undo/#לשחזר-commit-שאבד-reflog)).
 :::
 
 ```bash title="runs on: any shell"

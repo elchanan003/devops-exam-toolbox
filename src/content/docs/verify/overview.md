@@ -54,6 +54,8 @@ kubectl get pods,svc,ingress,pvc,secret -n <NS>
 curl -k --resolve <HOST>:<PORT>:<VM_IP> https://<HOST>:<PORT>/info
 ```
 
+`<PORT>` הוא ה-NodePort של HTTPS ב-ingress controller. מגלים אותו, לא מנחשים: `kubectl -n ingress-nginx get svc` ולקחת את המספר אחרי `443:` ([kubernetes/networking](../../kubernetes/networking/#curl---resolve-אל-ה-nodeport)).
+
 **איך נראה טוב:** JSON עם `version` = ה-candidate ו-`environment` = ה-env. אותו דבר לכל env.
 
 ### 6. תכונות GitOps

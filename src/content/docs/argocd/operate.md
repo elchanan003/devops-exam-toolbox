@@ -56,10 +56,10 @@ git ls-remote https://<USER>:$(cat <TOKEN_FILE>)@<GITLAB_HOST>/<GROUP>/<REPO>.gi
 **איך מוודאים:** רשימת refs (`HEAD`, `refs/heads/main`, tags). שגיאת `Access denied` = הבעיה בצד GitLab.
 
 :::caution[מלכודת · קרה בתרגול]
-`git ls-remote` עם credentials של ה-reader החזיר `HTTP Basic: Access denied` על `gitops` ו-OK על `templates`. סיבה: ה-bot ה-reader לא היה member ב-`gitops` (רק ה-bot של ה-CI היה). תיקון: להוסיף אותו כ-Reporter ב-GitLab. אין צורך להריץ מחדש script.
+`Access denied` על repo אחד בלבד עם אותו credential = ה-bot לא member באותו repo. הוספה כ-Reporter ב-GitLab, בלי להריץ מחדש script. פירוט: [gitlab/permissions](../../gitlab/permissions/#אבחון-403--access-denied-בגישה-ל-repo).
 :::
 
-ב-UI: Settings → Repositories → עמודת Connection Status (`Successful` / `Failed`).
+ב-UI: `Settings → Repositories`, עמודת Connection Status (`Successful` / `Failed`).
 
 ## קריאת הסטטוסים
 
@@ -92,15 +92,8 @@ kubectl -n argocd get application <APP> -o jsonpath='{.status.conditions}{"\n"}'
 
 ההודעה היא בצל: כל שכבה עוטפת את זו שמתחתיה, והסיבה האמיתית היא **השורה האחרונה**.
 
-```text title="shape of a real 5-layer message"
-ComparisonError: Failed to load target state:
-  failed to generate manifest for source 1 of 4:
-    rpc error: ... helm template . --name-template <RELEASE> --namespace <NS> ... --values <FILE> ...
-      failed exit status 1:
-        Error: YAML parse error on ...: ... line 47
-```
+פירוק מלא של הודעה כזאת, שכבה אחר שכבה: [debugging/overview](../../debugging/overview/#דוגמה-פירוק-שגיאה-שכבתית). בקיצור: `ComparisonError`, אחר כך איזה source, אחר כך `helm template` שנכשל, ובשורה האחרונה הסיבה.
 
-- שכבה 1: `ComparisonError`. שכבה 2: איזה source (1 מתוך 4). שכבה 3: `helm template` נכשל. שכבה 4: הפקודה המדויקת וה-value files. שכבה 5: הסיבה.
 - חפש בטקסט `denied`/`403`/`unauthorized`. אם אין, אל תוסיף סיבות שהטקסט לא תומך בהן.
 
 :::caution[מלכודת · קרה בתרגול]

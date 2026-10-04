@@ -81,7 +81,7 @@ Project → Settings → Repository → Protected branches → Expand
   → Protect / change an existing rule via its dropdowns
 ```
 
-- ברירת מחדל ל-`main`: push רק ל-Maintainers.
+- ברירת המחדל ל-`main` ב-project חדש תלויה בהגדרת ה-group/instance (לרוב: push רק ל-Maintainers). בדוק בטבלת ה-Protected branches.
 - ב-Free בוחרים **role** בלבד, לא user ספציפי (רשימת users מוכרים היא Premium).
 - כדי ש-CI promote (Developer) ידחוף ל-`main` ב-gitops: `Allowed to push and merge` = `Developers + Maintainers`. הפתרון הנגדי (להעלות את הבוט ל-Maintainer) הפוך מ-least privilege.
 - הגנה משפיעה גם על variables עם Protect (ראה [variables](../variables/)): ה-variable זמין רק ב-branch מוגן.
@@ -112,7 +112,7 @@ Project → Settings → Repository → Protected branches → Expand
 | ה-variable ריק כי Protect ON ב-branch לא מוגן? | [variables](../variables/) |
 | ה-URL נכון (group path, לא display name)? | `git remote -v` |
 
-אבחון נוסף ל-Argo: בממשק Argo → Settings → Repositories → עמודת CONNECTION STATUS. מצב ה-Secret לבד (`register-repository.sh --verify`) בודק רק צורה, לא ש-GitLab מקבל את ה-credential. פרטים: [argocd/operate](../../argocd/operate/). טבלת התסמינים הכללית: [debugging/symptoms](../../debugging/symptoms/).
+אבחון נוסף ל-Argo: בממשק Argo: `Settings → Repositories`, עמודת CONNECTION STATUS. מצב ה-Secret לבד (`register-repository.sh --verify`) בודק רק צורה, לא ש-GitLab מקבל את ה-credential. פרטים: [argocd/operate](../../argocd/operate/). טבלת התסמינים הכללית: [debugging/symptoms](../../debugging/symptoms/).
 
 :::tip[עיקרון]
 Least privilege: קורא = Reporter או deploy token קריאה; כותב = Developer + `write_repository` על ה-repo היחיד שהוא כותב אליו. "הוסף עוד הרשאה" הוא כמעט תמיד הכיוון הלא נכון.

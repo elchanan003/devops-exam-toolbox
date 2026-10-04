@@ -100,7 +100,7 @@ helm lint <CHART_DIR> -f base.yaml
 
 ## values layering: מי מנצח
 
-Argo (וגם `-f` מקומי) ממזג את הקבצים לפי הסדר. ל-TRIDENT: `base.yaml` → `<ENV>.yaml` → `versions/<ENV>.yaml`.
+Argo (וגם `-f` מקומי) ממזג את הקבצים לפי הסדר. ל-TRIDENT: `base.yaml → <ENV>.yaml → versions/<ENV>.yaml`.
 
 | סוג ערך | התנהגות | דוגמה |
 |---|---|---|

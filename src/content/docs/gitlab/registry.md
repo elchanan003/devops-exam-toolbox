@@ -58,7 +58,7 @@ kubectl create secret docker-registry <SECRET> -n <NS> \
   --docker-server=<REGISTRY> \
   --docker-username=<USER> \
   --docker-password="$(cat <TOKEN_FILE>)" \
-  --dry-run=client -o yaml | kubectl apply -f -
+  --dry-run=client -o yaml | kubectl apply --server-side --force-conflicts -f -
 ```
 
 הקשר: Secret לכל namespace של environment (Pod מושך רק עם Secret מה-namespace שלו), והשם נרשם ב-`extraImagePullSecrets` ב-values.

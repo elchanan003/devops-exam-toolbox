@@ -10,7 +10,7 @@ Token הוא "ייפוי כוח" של זהות. בוחרים זהות לפי **�
 דף זה עוסק ב**איך יוצרים** ובבחירה. מי צריך מה בכל התמונה: [architecture/credentials](../../architecture/credentials/). role מול scope: [permissions](../permissions/).
 :::
 
-## טבלת החלטה: actor → זהות
+## טבלת החלטה: איזו זהות לכל actor
 
 | actor | סוג זהות | scope | role | איפה נשמר |
 |---|---|---|---|---|
@@ -35,9 +35,10 @@ Token הוא "ייפוי כוח" של זהות. בוחרים זהות לפי **�
 | Service account (+ token) | כן | כן |
 | Deploy token (project / group) | כן | כן |
 | Project access token / Group access token | **לא** | כן |
-| Group runner | **לא** | כן |
+| Group runner | לפי התיעוד כן (בתרגול הכפתור לא הופיע) | כן |
 
-אומת מול התיעוד ב-2026-09-28. ה-GitLab של המבחן עשוי להיות שונה (self-managed או tier אחר), לכן הכר את שני המסלולים: ב-Premium אפשר project access token במקום service account.
+Project/group access tokens ו-service accounts: אומת מול התיעוד של GitLab. Group runners: התיעוד הנוכחי מציג אותם בכל ה-tiers (Owner על ה-group), אבל בתרגול הכפתור `New group runner` לא הופיע, לכן project runner הוא המסלול הבטוח ([runners](../runners/)). ה-GitLab של המבחן עשוי להיות שונה (self-managed או tier אחר), לכן הכר את שני המסלולים: ב-Premium אפשר project access token במקום service account.
+ב-gitlab.com, Owner של ה-group צריך לאמת זהות (identity verification) לפני שיוכל ליצור service account.
 
 :::caution[מלכודת · קרה בתרגול]
 חומרי הקורס מניחים project/group access tokens. ב-Free הכפתור לא קיים. המסלול שנבחר: service account שהוא member רק ב-`trident-ci` וב-`trident-gitops`, ו-PAT כ-fallback.
@@ -64,7 +65,7 @@ Add it as a member of each repo it needs:
   → Invite
 ```
 
-מיקום התפריט משתנה בין גרסאות (Settings → Service accounts, או Manage → Service accounts). אם אינך רואה: חפש "Service accounts" בסרגל הצד של ה-group.
+מיקום התפריט משתנה בין גרסאות (`Settings → Service accounts`, או `Manage → Service accounts`). אם אינך רואה: חפש "Service accounts" בסרגל הצד של ה-group.
 
 **איך מוודאים:** `git ls-remote` עם ה-token מצליח על שני ה-repos (ראה למטה). לא לשמור את הערך בהיסטוריה: `read -rs` לתוך קובץ (ראה [bash/snippets](../../bash/snippets/)).
 

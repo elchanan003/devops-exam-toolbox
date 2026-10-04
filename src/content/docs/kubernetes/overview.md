@@ -45,7 +45,7 @@ kubectl -n <NS> get events --field-selector type=Warning
 **איך מוודאים:** ב-`describe`, גלול ל-`Events:` — שם נמצא המשפט המדויק (`Failed to pull image`, `unbound immediate PersistentVolumeClaims`, `secret "..." not found`). קרא אותו מילה במילה במקום לנחש.
 
 :::tip[עיקרון]
-סדר אבחון: `get` (מה המצב) → `describe` (למה) → `logs` (מה האפליקציה אומרת). טבלת symptom → cause מלאה: [debugging/symptoms](../../debugging/symptoms/).
+סדר אבחון: קודם `get` (מה המצב), אחר כך `describe` (למה), ואז `logs` (מה האפליקציה אומרת). טבלת symptom → cause מלאה: [debugging/symptoms](../../debugging/symptoms/).
 :::
 
 ## לוגים: `logs`, ו-`--previous`
