@@ -70,15 +70,15 @@ kubectl -n <NS> get events --sort-by=.lastTimestamp | tail
 **איך מוודאים:** `Events` מכיל משפט שגיאה מדויק. קרא אותו מילה במילה.
 
 :::caution[מלכודת · קרה בתרגול]
-`postgres-0` ב-CrashLoop עם `StartError … mounting … /var/run/secrets/kubernetes.io … read-only file system`. סיבה: Secret/ConfigMap שמאונט ב-`/run/secrets` **ישירות** מתנגש עם ה-mount של ה-service-account token של Kubernetes (`/var/run` הוא `/run`). תיקון: מאונטים ל-**תת-תיקייה**, `mountPath: /run/secrets/<APP>`, וה-env מצביע על **הקובץ**:
-`POSTGRES_PASSWORD_FILE=/run/secrets/<APP>/postgres_password` (TRIDENT: `<APP>` = `trident`). אותה התנגשות פגעה גם ב-`signal-processor` (ConfigMap path + volumeMount), לא "כי ה-DB למטה". ה-contract דורש נתיב קובץ, לא ערך; התיקייה בחירה שלך.
+`postgres-0` ב-CrashLoop עם `StartError … mounting … /var/run/secrets/kubernetes.io … read-only file system`. סיבה: Secret/ConfigMap שמאונט ב-`/run/secrets` **ישירות** מתנגש עם ה-mount של ה-service-account token של Kubernetes (`/var/run` הוא `/run`). תיקון: מאונטים ל-**תת-תיקייה**, `mountPath: /run/secrets/<APP_DIR>`, וה-env מצביע על **הקובץ**:
+`POSTGRES_PASSWORD_FILE=/run/secrets/<APP_DIR>/postgres_password` (TRIDENT: `<APP_DIR>` = `trident`). אותה התנגשות פגעה גם ב-`signal-processor` (ConfigMap path + volumeMount), לא "כי ה-DB למטה". ה-contract דורש נתיב קובץ, לא ערך; התיקייה בחירה שלך.
 :::
 
 ## להיכנס ולבדוק: `exec`, `port-forward`
 
 ```bash title="runs on: VM"
 kubectl -n <NS> exec -it deploy/<SERVICE> -- sh
-kubectl -n <NS> exec deploy/<SERVICE> -- ls /run/secrets/<APP>
+kubectl -n <NS> exec deploy/<SERVICE> -- ls /run/secrets/<APP_DIR>
 kubectl -n <NS> port-forward svc/<SERVICE> 8080:8080  # then: curl http://127.0.0.1:8080/info
 ```
 

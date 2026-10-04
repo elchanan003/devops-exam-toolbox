@@ -87,7 +87,7 @@ kubectl -n <NS> get ingress
 ## Application `observability` אדום: סדר ההכנה
 
 :::caution[מלכודת · קרה בתרגול]
-ה-App היה `Failed` אחרי 5 ניסיונות: ה-namespace וה-Secrets לא היו קיימים כש-Argo ניסה. אחרי ש-`prepare-observability.sh` יצר אותם, Argo **לא** ניסה שוב. עדכון ב-Git לא עוזר (Argo לא קורא את `bootstrap/`): צריך **sync ידני**: [argocd/operate](../../argocd/operate/#argo-ויתר-sync-ידני).
+ה-App היה `Failed` אחרי retries ×5: ה-namespace וה-Secrets לא היו קיימים כש-Argo ניסה. אחרי ש-`prepare-observability.sh` יצר אותם, Argo **לא** ניסה שוב את אותו revision. עדכון ב-Git לא עוזר (Argo לא קורא את `bootstrap/`): צריך **sync ידני**: [argocd/operate](../../argocd/operate/#argo-ויתר-sync-ידני).
 :::
 
 ```bash title="runs on: VM"

@@ -88,7 +88,7 @@ kubectl -n <NS> get pvc,pods -w                         # Ctrl+C when Bound / Ru
 ```
 
 - מוחקים StatefulSet + PVC, **לא** את ה-Pod ולא את ה-StorageClass (`course-local-path` נשאר).
-- אם ה-sync כבר נכשל 5 פעמים, Argo ויתר: [manual sync](../../argocd/operate/#argo-ויתר-sync-ידני).
+- אם ה-sync כבר נכשל אחרי retries ×5, Argo לא ינסה שוב אותו revision: [manual sync](../../argocd/operate/#argo-ויתר-sync-ידני).
 
 **איך מוודאים:** `get pvc` — `Bound` ו-`STORAGECLASS` = `course-local-path`; `postgres-0` — `1/1 Running`; ה-App `Synced`/`Healthy`.
 

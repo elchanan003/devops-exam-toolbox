@@ -73,10 +73,10 @@ kubectl -n <NS> create secret generic <SECRET> --from-file=postgres_password=<FI
 
 ## מאונט כקובץ, לא כ-env
 
-Secret כ-**קובץ** מוגן בהרשאות; משתנה סביבה דולף ל-child processes, ל-`kubectl describe` וללוגים. לכן `POSTGRES_PASSWORD_FILE=/run/secrets/<APP>/postgres_password` (TRIDENT: `<APP>` = `trident`) ולא ערך. ב-Compose, `secrets:` מתורגם ל-Secret **volume**, לא ל-`envFrom secretRef`. מיפוי: [architecture/compose-to-k8s](../../architecture/compose-to-k8s/).
+Secret כ-**קובץ** מוגן בהרשאות; משתנה סביבה דולף ל-child processes, ל-`kubectl describe` וללוגים. לכן `POSTGRES_PASSWORD_FILE=/run/secrets/<APP_DIR>/postgres_password` (TRIDENT: `<APP_DIR>` = `trident`) ולא ערך. ב-Compose, `secrets:` מתורגם ל-Secret **volume**, לא ל-`envFrom secretRef`. מיפוי: [architecture/compose-to-k8s](../../architecture/compose-to-k8s/).
 
 ```bash title="runs on: VM"
-kubectl -n <NS> exec deploy/<SERVICE> -- ls -l /run/secrets/<APP>
+kubectl -n <NS> exec deploy/<SERVICE> -- ls -l /run/secrets/<APP_DIR>
 ```
 
 :::caution[מלכודת · קרה בתרגול]

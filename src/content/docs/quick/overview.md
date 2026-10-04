@@ -122,7 +122,10 @@ kubectl -n <NS> logs deploy/<SERVICE> --tail=50                    # recent logs
 kubectl -n <NS> logs deploy/<SERVICE> --previous                   # before last crash
 kubectl -n <NS> exec -it deploy/<SERVICE> -- sh                    # shell inside
 kubectl -n <NS> rollout restart deploy/<SERVICE>                   # restart Deployment
-kubectl -n <NS> delete pod -l trident.dev/service=<SERVICE>        # controller recreates it
+kubectl -n <NS> logs <POD> -c <CONTAINER>                          # one container; no logs = never started, use describe
+kubectl -n <NS> delete pod <POD>                                   # StatefulSet: broken Pod is not auto-replaced after a Git fix
+kubectl -n <NS> delete statefulset <SERVICE>                       # immutable volumeClaimTemplates: delete STS + its PVC,
+kubectl -n <NS> delete pvc <PVC>                                   # then manual sync; never delete the StorageClass
 kubectl -n <NS> get secret <SECRET> -o jsonpath='{.data}' | jq 'keys'   # key names only
 kubectl get sc                                                     # StorageClasses
 kubectl -n ingress-nginx get svc                                   # NodePort after 443:
@@ -138,7 +141,8 @@ kubectl -n argocd get application <APP> -o jsonpath='{.status.sync.status}/{.sta
 kubectl -n argocd get application <APP> -o jsonpath='{.status.conditions}{"\n"}'     # why Unknown
 kubectl -n argocd get application <APP> -o jsonpath='{.status.operationState.message}{"\n"}'   # last sync message
 kubectl -n argocd get application <APP> -o jsonpath='{.status.operationState.finishedAt}{"\n"}' # compare with date
-kubectl -n argocd annotate application <APP> argocd.argoproj.io/refresh=hard --overwrite   # re-read Git
+kubectl -n argocd annotate application <APP> argocd.argoproj.io/refresh=hard --overwrite   # re-read Git (does not restart a Failed sync)
+kubectl -n argocd patch application <APP> --type merge -p '{"operation":{"initiatedBy":{"username":"admin"},"sync":{"syncStrategy":{"hook":{}}}}}'   # manual sync
 kubectl -n argocd get secret <SECRET> -o jsonpath='{.data.url}' | base64 -d; echo   # repo url bytes
 kubectl apply -f <FILE>                                                              # root only, once
 ```

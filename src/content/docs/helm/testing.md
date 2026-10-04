@@ -169,7 +169,7 @@ helm template r mini --set-string image.tag=1.2 > /dev/null ; echo "exit=$?"
 **איך מוודאים:** בלי tag: `values don't meet the specifications of the schema(s)`, `at '/image/tag': minLength: got 0, want 1`, exit 1 בשתי הפקודות (גם `lint`). עם tag: exit 0.
 
 :::caution[מלכודת]
-`--set image.tag=1.20` נותן **מספר** (1.2) ו-schema עם `"type": "string"` ייכשל: `got number, want string`. לגרסאות ולתגיות השתמש תמיד ב-`--set-string`, או בקובץ values עם מרכאות.
+`--set image.tag=1` (מספר שלם) או `=true` הופכים למספר/boolean, ו-schema עם `"type": "string"` ייכשל: `got number, want string` (נבדק; `1.20` נשאר מחרוזת, כי Helm ממיר רק מספרים שלמים, `true`/`false` ו-`null`). לתגיות השתמש תמיד ב-`--set-string`, או בקובץ values עם מרכאות.
 :::
 
 ## בדיקה מבנית: `kubectl create --dry-run=client` + `jq`

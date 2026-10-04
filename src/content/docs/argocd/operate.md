@@ -51,7 +51,7 @@ kubectl -n argocd get secret -l argocd.argoproj.io/secret-type=repository
 ה-flag `--verify` של `register-repository.sh` בודק רק את **צורת** ה-Secret (שדות, label), לא ש-GitLab מקבל אותו.
 
 ```bash title="runs on: VM"
-git ls-remote https://<USER>:$(cat <TOKEN_FILE>)@<GITLAB_HOST>/<GROUP>/<REPO>.git
+git ls-remote https://<USER>:$(cat <TOKEN_FILE>)@<GITLAB_HOST>/<GROUP>/<REPO>.git HEAD
 ```
 
 **איך מוודאים:** רשימת refs (`HEAD`, `refs/heads/main`, tags). שגיאת `Access denied` = הבעיה בצד GitLab.
@@ -126,7 +126,7 @@ kubectl -n argocd annotate application <APP> argocd.argoproj.io/refresh=hard --o
 ## Argo ויתר: sync ידני
 
 :::caution[מלכודת · קרה בתרגול]
-`operationState.phase: Failed`: Argo ניסה sync אוטומטי **5 פעמים** ונעצר. הוא לא ינסה שוב לבד על אותו commit, ו-`refresh=hard` לא מחייה אותו. צריך **sync ידני**. ההודעה ב-`operationState.message` יכולה להיות **ישנה** (36 דקות): השווה `finishedAt` ל-`date -u` לפני שמסיקים שהשגיאה עדכנית.
+`operationState.phase: Failed` אחרי retries ×5. מנגנון: ל-sync האוטומטי יש retry פנימי עם **limit ברירת מחדל 5** (אלא אם הגדרת `syncPolicy.retry`). כשה-operation מסתיים ב-`Failed`, Argo **לא מנסה שוב** אוטומטית את אותו revision עם אותם פרמטרים. `refresh=hard` רק קורא Git מחדש ולא מתניע sync. צריך **sync ידני** (או commit חדש, אבל הוא ייכשל שוב אם הסיבה במצב ה-cluster). ההודעה ב-`operationState.message` יכולה להיות **ישנה** (36 דקות): השווה `finishedAt` ל-`date -u` לפני שמסיקים שהשגיאה עדכנית.
 :::
 
 אפשרות 1: ב-UI, כפתור **Sync** באפליקציה. אפשרות 2: `kubectl patch` של השדה `operation` (הצורה מהתיעוד הרשמי, [Sync Applications with Kubectl](https://argo-cd.readthedocs.io/en/stable/user-guide/sync-kubectl/)):
@@ -137,6 +137,17 @@ kubectl -n argocd patch application <APP> --type merge -p '{"operation":{"initia
 ```
 
 הפקודה הראשונה היא בדיקה בלבד (`--dry-run=server`). **איך מוודאים:** `OP` ב-`get applications` עובר ל-`Running` ואז `Succeeded`, וה-App `Synced`/`Healthy`. Argo מסיר את `.operation` בסיום.
+
+רצוי למנוע את זה מראש: `syncPolicy.retry` מאפשר לקבוע `limit` אחר (`-1` = ללא הגבלה) ו-`backoff` (`duration`, `factor`, `maxDuration`). השדות קיימים ב-CRD של ה-cluster (`kubectl explain application.spec.syncPolicy.retry`).
+
+```yaml title="file: gitops/argocd/apps/<ENV>.yaml (excerpt, optional)"
+spec:
+  syncPolicy:
+    automated: {prune: true, selfHeal: true}
+    retry:
+      limit: -1        # -1 = unlimited; omitted = default 5
+      backoff: {duration: 5s, factor: 2, maxDuration: 3m}
+```
 
 :::tip[עיקרון]
 כשכישלון הוא על **מצב ה-cluster** (PVC, StatefulSet, namespace/Secret חסרים), push ל-Git לא יעזור: מתקנים את ה-cluster ואז sync ידני. גם `bootstrap/` ו-scripts לא נקראים על ידי Argo: הוא קורא רק manifests.

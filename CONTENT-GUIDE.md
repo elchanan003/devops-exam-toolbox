@@ -115,6 +115,14 @@ sidebar:
 | `<DOMAIN>` | DNS domain for env hosts | `trident.test` |
 | `<VAR_NAME>` | an environment variable name | `TRIDENT_GITOPS_URL` |
 | `<EMAIL>` | an email for git identity | `trident-ci@noreply` |
+| `<APP_DIR>` | secret mount sub-directory name: `mountPath: /run/secrets/<APP_DIR>` (never `/run/secrets` itself). Not the same as `<APP>` | `trident` |
+| `<POD>` | Pod name | `postgres-0` |
+| `<CONTAINER>` | container name inside a Pod | `postgres` |
+| `<PVC>` | PersistentVolumeClaim name | `postgres-data-postgres-0` |
+| `<RESOURCE>` / `<KIND>` / `<FIELD>` | Kubernetes resource type / kind / field path (for `kubectl explain`, `api-resources`) | `statefulset` / `ingress` / `volumeClaimTemplates` |
+| `<LABEL>` | a `key=value` label selector | `trident.dev/service=ingest-api` |
+| `<URL>` | a git remote URL | `git@gitlab.com:trident-lab00/trident-gitops.git` |
+| `<BASE64>` | a base64 string | (none) |
 
 - Show the TRIDENT value on the line **below** as a comment, only where it helps:
   ```bash

@@ -124,7 +124,7 @@ deployments:
 `mountPath: /run/secrets` ישירות: ה-Pod נכשל עם
 `StartError … mounting … /var/run/secrets/kubernetes.io … read-only file system`.
 **סיבה:** `/var/run` הוא `/run`, אז ה-mount (read-only) מתנגש ב-mount של ה-token של ה-service account ב-`/var/run/secrets/kubernetes.io/serviceaccount`.
-**תיקון:** תת-תיקייה: `mountPath: /run/secrets/<APP>` (TRIDENT: `/run/secrets/trident`), ו-`POSTGRES_PASSWORD_FILE=/run/secrets/trident/postgres_password`.
+**תיקון:** תת-תיקייה: `mountPath: /run/secrets/<APP_DIR>` (TRIDENT: `/run/secrets/trident`), ו-`POSTGRES_PASSWORD_FILE=/run/secrets/<APP_DIR>/postgres_password`.
 זה פגע גם ב-**postgres** וגם ב-**signal-processor** (ConfigMap path + volumeMount ב-values של האפליקציה) — signal-processor לא נפל "בגלל ה-DB".
 **בלי לוגים?** ה-container לא התחיל: `kubectl describe pod` ← Events.
 :::

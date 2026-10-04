@@ -62,12 +62,12 @@ kubectl -n <NS> get secret <SECRET> -o jsonpath='{.type}{"\n"}'   # the TLS Secr
 
 ```bash title="runs on: VM"
 kubectl -n ingress-nginx get svc
-# PORT(S) column looks like 80:30593/TCP,443:31731/TCP -> <PORT> is the number after "443:"
+# PORT(S) column looks like 80:30593/TCP,443:31651/TCP -> <PORT> is the number after "443:"
 ```
 
 ```bash title="runs on: VM"
 curl -k --resolve <HOST>:<PORT>:<VM_IP> https://<HOST>:<PORT>/info
-# TRIDENT (port differs per cluster): curl -k --resolve dev.trident.test:31731:192.168.242.130 https://dev.trident.test:31731/info
+# TRIDENT (port differs per cluster): curl -k --resolve dev.trident.test:31651:192.168.242.130 https://dev.trident.test:31651/info
 ```
 
 - `--resolve <HOST>:<PORT>:<VM_IP>` אומר ל-`curl`: "ל-host הזה בפורט הזה, השתמש בכתובת הזאת" — בלי לשנות `/etc/hosts`. ה-URL ו-ה-`Host` header נשארים `<HOST>`, אז ה-Ingress מתאים לכלל.
@@ -75,7 +75,7 @@ curl -k --resolve <HOST>:<PORT>:<VM_IP> https://<HOST>:<PORT>/info
 
 ```bash title="runs on: VM"
 curl --cacert <FILE> --resolve <HOST>:<PORT>:<VM_IP> https://<HOST>:<PORT>/info
-# TRIDENT: curl --cacert ~/.local/share/trident/tls/ca.crt --resolve dev.trident.test:31731:192.168.242.130 https://dev.trident.test:31731/info
+# TRIDENT: curl --cacert ~/.local/share/trident/tls/ca.crt --resolve dev.trident.test:31651:192.168.242.130 https://dev.trident.test:31651/info
 ```
 
 עם `--cacert` מוודאים גם שהתעודה נחתמה על ידי ה-CA הנכון — בדיקה אמיתית יותר מ-`-k`.

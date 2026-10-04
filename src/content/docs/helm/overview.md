@@ -59,7 +59,7 @@ helm template <RELEASE> <CHART_DIR> -n <NS> -f base.yaml -f <ENV>.yaml -f versio
 ```
 
 אם עם `probe` ה-exit הוא 0 ובלי — 1: הבעיה היא התג הריק (במקרה כזה זה צפוי, ה-CI ימלא אותו). אחרת הבעיה במקום אחר.
-זו שיטת **isolation**: משנים דבר אחד ורואים מה זז. למספרי גרסה כמו `1.20` השתמש ב-`--set-string`, אחרת Helm הופך אותם למספר.
+זו שיטת **isolation**: משנים דבר אחד ורואים מה זז. לתג שהוא מספר שלם (`--set image.tag=1`) או `true`/`false`, `--set` הופך אותו למספר/boolean: השתמש ב-`--set-string`. (`1.20` נשאר מחרוזת גם ב-`--set`.)
 
 ## `-s` — לרנדר template אחד, ולמצוא בתוך ה-render
 
@@ -101,7 +101,7 @@ helm lint <CHART_DIR> -f base.yaml
 ## ארגז כלים: `--set-string`, `dependency list`, `diff` בין סביבות
 
 ```bash title="runs on: VM"
-helm template <RELEASE> <CHART_DIR> -f <FILE> --set-string image.tag=1.20      # stays a string, not the number 1.2
+helm template <RELEASE> <CHART_DIR> -f <FILE> --set-string image.tag=1          # stays the string "1", not the number 1
 helm show values <CHART_DIR> | grep -n -A5 storage                             # find a key and its comment
 helm lint <CHART_DIR> -f <FILE> -f <FILE>                                      # structure only, see testing page
 helm dependency list <CHART_DIR>                                               # sub-charts (WARNING: no dependencies = none)

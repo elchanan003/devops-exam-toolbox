@@ -27,7 +27,8 @@ Next page shows the runner authentication token  glrt-…  (copy it now) and a r
 ## לרשום על ה-VM
 
 ```bash title="runs on: VM"
-sudo gitlab-runner register --non-interactive --url https://gitlab.com --token glrt-… --executor shell --description trident
+read -rs RUNNER_TOKEN        # paste the glrt- token (not echoed), then Enter
+sudo gitlab-runner register --non-interactive --url https://<GITLAB_HOST> --token "$RUNNER_TOKEN" --executor shell --description trident
 ```
 
 - `sudo` כי הפקודה כותבת את `/etc/gitlab-runner/config.toml` (שייך ל-root).
