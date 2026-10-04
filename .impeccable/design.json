@@ -1,0 +1,127 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-04T00:00:00Z",
+  "title": "Design System: DevOps Exam Toolbox",
+  "extensions": {
+    "colorMeta": {
+      "accent-dark": { "role": "primary", "displayName": "Lagoon Teal (dark)", "canonical": "#41c4aa", "tonalRamp": ["#0b2a24", "#123029", "#1b5a4c", "#2a8d77", "#41c4aa", "#74d6c2", "#a8e8d9", "#d6f4ec"] },
+      "accent-light": { "role": "primary", "displayName": "Lagoon Teal (light)", "canonical": "#0c6b5b", "tonalRamp": ["#05231e", "#0a4f43", "#0c6b5b", "#2b8f7d", "#5db3a3", "#9ccfc5", "#cfe6e1", "#e2efec"] },
+      "ground-dark": { "role": "neutral", "displayName": "Night Ground", "canonical": "#0d1310", "tonalRamp": ["#0d1310", "#18211c", "#2a3630", "#5a6b63", "#8fa198", "#c4d1ca", "#e4ece7", "#f2f7f4"] },
+      "ground-light": { "role": "neutral", "displayName": "Paper Ground", "canonical": "#f3f5f3", "tonalRamp": ["#0f1a15", "#14201b", "#2b3832", "#46554e", "#6b7b73", "#c9d4ce", "#e6ece8", "#f3f5f3"] },
+      "placeholder-bg-dark": { "role": "semantic", "displayName": "Placeholder Amber (dark)", "canonical": "#4a3a0c", "tonalRamp": ["#2a2007", "#4a3a0c", "#8a6a1a", "#b88f26", "#e0b44a", "#ffd772", "#ffe6a3", "#fff0cf"] },
+      "placeholder-bg-light": { "role": "semantic", "displayName": "Placeholder Amber (light)", "canonical": "#fff0b8", "tonalRamp": ["#3a2c00", "#5a4300", "#8a6a1a", "#b8932a", "#d9b13b", "#ecd06e", "#fff0b8", "#fff8dc"] },
+      "danger-ink-dark": { "role": "semantic", "displayName": "Danger Rose (dark)", "canonical": "#f59b90", "tonalRamp": ["#2c1514", "#4a1f1c", "#6a2a26", "#a04840", "#d27266", "#f59b90", "#f9c4bc", "#fce3df"] },
+      "tip-ink-dark": { "role": "semantic", "displayName": "Tip Sage (dark)", "canonical": "#a9d9a2", "tonalRamp": ["#172219", "#233a27", "#2f4a33", "#4f7a50", "#7fb078", "#a9d9a2", "#c8e8c3", "#e4f4e1"] }
+    },
+    "typographyMeta": {
+      "h1": { "displayName": "Page Title", "purpose": "Rubik 700; one per page." },
+      "h2": { "displayName": "Section", "purpose": "Rubik 600 under a 1px rule." },
+      "h3": { "displayName": "Subsection", "purpose": "Rubik 600." },
+      "body": { "displayName": "Reading", "purpose": "Heebo 17px at 1.7, max 72ch." },
+      "table": { "displayName": "Table", "purpose": "Dense reference rows." },
+      "label": { "displayName": "Label", "purpose": "Table headers, callout titles, sidebar groups." },
+      "code": { "displayName": "Code", "purpose": "JetBrains Mono for literal text only." }
+    },
+    "shadows": [],
+    "motion": [
+      { "name": "first-aid-fade", "value": "background-color 160ms ease-out", "purpose": "Hover tint on home first-aid links; disabled under prefers-reduced-motion." }
+    ],
+    "breakpoints": [
+      { "name": "first-aid-stack", "value": "40rem" },
+      { "name": "table-min-cell", "value": "50rem" },
+      { "name": "type-step-up", "value": "50em" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Callout (note)",
+      "kind": "custom",
+      "refersTo": "callout",
+      "description": "Tinted field with 1px rule; note = page intro, caution = trap, danger = destructive, tip = principle.",
+      "html": "<div class=\"ds-callout\"><div class=\"ds-callout-title\">בקצרה</div><div class=\"ds-callout-body\">Short Hebrew intro with <code class=\"ds-code\">kubectl</code>.</div></div>",
+      "css": ".ds-callout { border: 1px solid #1f4a40; border-radius: 8px; background: #10241f; color: #e4ece7; padding: 0.85rem 1.1rem; font-family: Heebo, system-ui, sans-serif; direction: rtl; } .ds-callout-title { font-family: Rubik, Heebo, sans-serif; font-size: 0.9375rem; font-weight: 600; color: #a8e8d9; } .ds-callout-body { margin-top: 0.35rem; font-size: 0.975rem; line-height: 1.65; } .ds-code { direction: ltr; unicode-bidi: isolate; white-space: nowrap; font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 0.86em; padding: 0.1em 0.35em; border-radius: 4px; border: 1px solid #26322c; background: #1d2822; }"
+    },
+    {
+      "name": "Callout (trap)",
+      "kind": "custom",
+      "refersTo": "callout",
+      "description": "Amber-brown field for a trap from real practice.",
+      "html": "<div class=\"ds-trap\"><div class=\"ds-trap-title\">מלכודת</div><div>Describe the trap at the point of use.</div></div>",
+      "css": ".ds-trap { border: 1px solid #5c4419; border-radius: 8px; background: #2a2010; color: #e4ece7; padding: 0.85rem 1.1rem; font-family: Heebo, system-ui, sans-serif; direction: rtl; font-size: 0.975rem; line-height: 1.65; } .ds-trap-title { font-family: Rubik, Heebo, sans-serif; font-size: 0.9375rem; font-weight: 600; color: #f3c46e; margin-bottom: 0.35rem; }"
+    },
+    {
+      "name": "Placeholder Chip",
+      "kind": "chip",
+      "refersTo": "placeholder-chip",
+      "description": "Amber highlight on an UPPER_SNAKE token inside code.",
+      "html": "<code class=\"ds-code\">git clone <span class=\"ds-ph\">&lt;REPO_URL&gt;</span></code>",
+      "css": ".ds-code { direction: ltr; unicode-bidi: isolate; white-space: nowrap; font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 0.86em; padding: 0.1em 0.35em; border-radius: 4px; border: 1px solid #26322c; background: #1d2822; color: #e4ece7; } .ds-ph { background: #4a3a0c; color: #ffd772; border-radius: 3px; padding-inline: 0.15em; outline: 1px solid #8a6a1a; font-weight: 600; }"
+    },
+    {
+      "name": "Runs-on Pill",
+      "kind": "chip",
+      "refersTo": "runs-on-pill",
+      "description": "Small mono pill stating where a command runs.",
+      "html": "<span class=\"ds-runson\">runs on: VM</span>",
+      "css": ".ds-runson { display: inline-block; direction: ltr; unicode-bidi: isolate; font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 0.8125rem; padding: 0.1em 0.6em; border-radius: 999px; background: #123029; color: #41c4aa; border: 1px solid rgba(65,196,170,0.45); }"
+    },
+    {
+      "name": "First-aid Row",
+      "kind": "nav",
+      "refersTo": "first-aid-link",
+      "description": "Row of four symptom-first links between hairlines on the home page.",
+      "html": "<nav class=\"ds-firstaid\"><a href=\"#\"><b>טבלת תסמינים</b><span>One-line description</span></a><a href=\"#\"><b>איפה זה רץ</b><span>One-line description</span></a></nav>",
+      "css": ".ds-firstaid { display: grid; grid-template-columns: repeat(auto-fit, minmax(11.5rem, 1fr)); border-block: 1px solid #26322c; direction: rtl; font-family: Heebo, system-ui, sans-serif; } .ds-firstaid a { display: flex; flex-direction: column; gap: 0.15rem; padding: 0.8rem 0.9rem; text-decoration: none; color: #f2f7f4; border-inline-end: 1px solid #26322c; transition: background-color 160ms ease-out; } .ds-firstaid a:last-child { border-inline-end: 0; } .ds-firstaid a:hover { background: #123029; } .ds-firstaid a:focus-visible { outline: 2px solid #41c4aa; outline-offset: 2px; } .ds-firstaid b { font-family: Rubik, Heebo, sans-serif; font-weight: 600; font-size: 1rem; color: #41c4aa; } .ds-firstaid span { font-size: 0.875rem; color: #8fa198; line-height: 1.45; }"
+    },
+    {
+      "name": "Index Block",
+      "kind": "card",
+      "refersTo": "index-block",
+      "description": "Tab name as heading link under a 2px rule, then plain task links.",
+      "html": "<section class=\"ds-index\"><h2><a href=\"#\">GitLab CI</a></h2><ul><li><a href=\"#\">Promote to <code>staging</code></a></li><li><a href=\"#\">Scoped tokens</a></li></ul></section>",
+      "css": ".ds-index { padding-top: 0.85rem; border-top: 2px solid #2a3630; font-family: Heebo, system-ui, sans-serif; direction: rtl; } .ds-index h2 { margin: 0; font-family: Rubik, Heebo, sans-serif; font-size: 1.3rem; font-weight: 700; } .ds-index h2 a { color: #f2f7f4; text-decoration: none; } .ds-index h2 a:hover { color: #41c4aa; text-decoration: underline; text-underline-offset: 0.2em; } .ds-index ul { list-style: none; padding: 0; margin: 0.5rem 0 0; } .ds-index li a { display: inline-block; padding: 0.2rem 0; font-size: 1rem; line-height: 1.45; color: #41c4aa; text-decoration: underline; text-decoration-color: rgba(65,196,170,0.22); text-decoration-thickness: 1px; text-underline-offset: 0.22em; } .ds-index li a:hover { text-decoration-color: currentColor; text-decoration-thickness: 2px; } .ds-index li a:focus-visible { outline: 2px solid #41c4aa; outline-offset: 2px; } .ds-index li a code { font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 0.85em; text-decoration: none; }"
+    },
+    {
+      "name": "Keycap",
+      "kind": "custom",
+      "refersTo": "kbd",
+      "description": "Mono keycap with a heavier bottom edge.",
+      "html": "<kbd class=\"ds-kbd\">Ctrl</kbd> + <kbd class=\"ds-kbd\">K</kbd>",
+      "css": ".ds-kbd { font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 0.8em; padding: 0.1em 0.45em; border: 1px solid #2a3630; border-bottom-width: 2px; border-radius: 4px; background: #141b17; color: #e4ece7; direction: ltr; unicode-bidi: isolate; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Back-of-Book Index",
+    "overview": "This is a technical reference set the way a printed manual is set: reading text on a quiet ground, structure carried by type weight and hairline rules, one teal accent reserved for links and current state. It serves one student mid-exam on a second monitor, scanning for a command, copying it and going back to the terminal. Nothing decorative stands between the eye and the term it wants. Starlight's chrome stays; the build re-skins it with the guide-family world: green-tinted neutrals (hue about 150) in place of Starlight's blue-gray.\n\nDensity is operational but not cramped: 17px body at 1.7 line height, tables at 15px, headings on a tight fixed rem scale. Dark is the default theme and light is a full peer. Hebrew prose runs RTL; every command, flag and technical term is English and stays LTR and unbroken.",
+    "keyCharacteristics": [
+      "Hairlines (1px) and a heavier 2px rule divide content; boxes are rare and tinted, never shadowed.",
+      "One accent hue (teal), used for links, current state, focus and the runs-on pill only.",
+      "Heebo for reading, Rubik for headings and labels, JetBrains Mono strictly for code.",
+      "Amber is reserved for placeholders; callout hues carry fixed meaning.",
+      "Flat: no shadows anywhere in the build."
+    ],
+    "rules": [
+      { "name": "The One Accent Rule", "body": "Teal marks navigation and state only. It never fills a large area and never decorates.", "section": "colors" },
+      { "name": "The Amber Is Placeholder Rule", "body": "Amber on a code token means \"replace me\". Trap callouts use a related warm hue, but as a quiet field, never as the saturated chip.", "section": "colors" },
+      { "name": "The Paired Theme Rule", "body": "Any new color is defined for dark and light together as a custom property; no theme-specific one-offs in component rules.", "section": "colors" },
+      { "name": "The Mono Is Literal Rule", "body": "JetBrains Mono appears only for code, commands, paths, keycaps and \"runs on\" labels. Never for emphasis or decoration.", "section": "typography" },
+      { "name": "The Never-Split Rule", "body": "Inline code is nowrap with ligatures off, so a flag like --force is never broken at its hyphen and copies exactly. Markdown smartypants is off for the same reason.", "section": "typography" },
+      { "name": "The Hairline Over Box Rule", "body": "Separate with a rule or a whitespace gap before reaching for a bordered box. Where a field is needed, it is tinted with a 1px rule in a matching hue.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do keep Hebrew prose RTL and all code, commands, flags and technical terms English and LTR.",
+      "Do use teal only for links, current state and focus (2px focus ring, 2px offset, in the theme's accent).",
+      "Do define any new color as a dark and light custom-property pair.",
+      "Do keep callout meanings fixed: note = intro, caution = trap, danger = destructive, tip = principle.",
+      "Do give every command block a title that says where it runs.",
+      "Do respect prefers-reduced-motion; the only transition in the build is a 160ms background fade on first-aid links."
+    ],
+    "donts": [
+      "Don't use amber for anything except placeholders and trap callouts' quiet field.",
+      "Don't set Hebrew text in mono or put code inside an RTL flow without isolation.",
+      "Don't add shadows, thick side-stripe borders or boxed card grids; the house voice is hairlines and tinted fields.",
+      "Don't let smartypants or ligatures alter a command; commands must copy exactly.",
+      "Don't open the home page with a hero or same-size icon cards; it is an index."
+    ]
+  }
+}
