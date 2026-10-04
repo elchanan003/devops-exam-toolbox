@@ -1,0 +1,21 @@
+{
+  "name": "devops-exam-toolbox",
+  "type": "module",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "@astrojs/markdown-remark": "^7.3.1",
+    "@astrojs/starlight": "^0.42.5",
+    "@fontsource/heebo": "^5.3.0",
+    "@fontsource/jetbrains-mono": "^5.3.0",
+    "@fontsource/rubik": "^5.3.0",
+    "astro": "^7.3.5",
+    "unist-util-visit": "^5.1.0"
+  }
+}

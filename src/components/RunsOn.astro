@@ -1,0 +1,6 @@
+---
+// <RunsOn where="VM" />  — small "runs on" badge. where: VM | Mac | CI job | GitLab UI | any shell
+interface Props { where: 'VM' | 'Mac' | 'CI job' | 'GitLab UI' | 'any shell' }
+const { where } = Astro.props;
+---
+<span class="tb-runson">runs on: {where}</span>

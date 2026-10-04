@@ -1,0 +1,8 @@
+/* Each weight file includes all subsets (latin, latin-ext, hebrew, ...) via unicode-range. */
+@import '@fontsource/heebo/400.css';
+@import '@fontsource/heebo/500.css';
+@import '@fontsource/heebo/700.css';
+@import '@fontsource/rubik/500.css';
+@import '@fontsource/rubik/700.css';
+@import '@fontsource/jetbrains-mono/400.css';
+@import '@fontsource/jetbrains-mono/600.css';

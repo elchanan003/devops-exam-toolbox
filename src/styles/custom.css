@@ -1,0 +1,98 @@
+/* ==========================================================================
+   DevOps Exam Toolbox — functional baseline (to be restyled by a designer)
+   Sections: 1 tokens · 2 palette · 3 typography · 4 code (LTR) · 5 placeholders · 6 tables · 7 components
+   ========================================================================== */
+
+/* 1. Tokens ---------------------------------------------------------------- */
+:root {
+  --tb-placeholder-bg: #5a4a10;
+  --tb-placeholder-ink: #ffe08a;
+  --tb-placeholder-border: #b8952a;
+  --tb-badge-bg: var(--sl-color-accent-low);
+  --tb-badge-ink: var(--sl-color-text-accent);
+}
+:root[data-theme='light'] {
+  --tb-placeholder-bg: #fff0b8;
+  --tb-placeholder-ink: #5a4300;
+  --tb-placeholder-border: #d9b13b;
+}
+
+/* 2. Palette (provisional) -> Starlight variables.
+   Starlight: dark is the :root default, light is :root[data-theme='light'].
+   Unlayered rules here beat Starlight's @layer rules. ---------------------- */
+:root {
+  --sl-color-accent-low: #123029;
+  --sl-color-accent: #41c4aa;
+  --sl-color-accent-high: #a8e8d9;
+}
+:root[data-theme='light'] {
+  --sl-color-accent-low: #e2efec;
+  --sl-color-accent: #0c6b5b;
+  --sl-color-accent-high: #0a4f43;
+}
+
+/* 3. Typography ------------------------------------------------------------ */
+:root {
+  --sl-font: 'Heebo', system-ui, sans-serif;
+  --sl-font-mono: 'JetBrains Mono', ui-monospace, monospace;
+  --tb-font-heading: 'Rubik', 'Heebo', system-ui, sans-serif;
+}
+h1, h2, h3, h4, .sl-markdown-content :is(h1, h2, h3, h4) {
+  font-family: var(--tb-font-heading);
+  text-wrap: balance;
+}
+
+/* 4. Code blocks stay LTR inside RTL pages --------------------------------- */
+.expressive-code,
+.expressive-code .frame,
+.expressive-code pre,
+.expressive-code code,
+.expressive-code figcaption {
+  direction: ltr;
+  text-align: left;
+  unicode-bidi: isolate;
+}
+.expressive-code .copy { direction: ltr; }
+:not(pre) > code {
+  direction: ltr;
+  unicode-bidi: isolate;
+}
+
+/* 5. Placeholders: <UPPER_SNAKE> ------------------------------------------- */
+/* Block code: EC text markers (regex meta added by src/plugins/placeholders.mjs). */
+.expressive-code {
+  --ec-tm-markBg: var(--tb-placeholder-bg);
+  --ec-tm-markBrdCol: var(--tb-placeholder-border);
+}
+.expressive-code .ec-line mark span {
+  color: var(--tb-placeholder-ink) !important; /* beat EC inline token colours */
+}
+/* Inline code: span.ph added by rehype plugin. */
+code .ph, .ph {
+  background: var(--tb-placeholder-bg);
+  color: var(--tb-placeholder-ink);
+  border-radius: 3px;
+  padding-inline: 0.15em;
+  outline: 1px solid var(--tb-placeholder-border);
+}
+
+/* 6. Tables: horizontal scroll on narrow screens --------------------------- */
+.sl-markdown-content table {
+  display: block;
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+/* 7. Components ------------------------------------------------------------ */
+.tb-runson {
+  display: inline-block;
+  direction: ltr;
+  unicode-bidi: isolate;
+  font-family: var(--sl-font-mono);
+  font-size: var(--sl-text-xs);
+  padding: 0.1em 0.6em;
+  border-radius: 999px;
+  background: var(--tb-badge-bg);
+  color: var(--tb-badge-ink);
+  border: 1px solid var(--sl-color-accent);
+}
