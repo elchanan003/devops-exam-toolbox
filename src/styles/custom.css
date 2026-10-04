@@ -213,7 +213,7 @@ code .ph, .ph {
   white-space: nowrap;
 }
 .sl-markdown-content tr:hover td { background: color-mix(in srgb, var(--sl-color-accent) 5%, transparent); }
-.sl-markdown-content td code { white-space: nowrap; }
+.sl-markdown-content td code { white-space: normal; } /* long commands wrap at spaces instead of being clipped */
 .sl-markdown-content td:first-child { font-weight: 500; }
 @media (max-width: 50rem) {
   .sl-markdown-content :is(th, td) { min-width: 9rem; }
