@@ -28,6 +28,30 @@ Git הוא הדרך היחידה להכניס שינוי ל-GitOps: **GitLab ה�
 
 ביום המבחן סביר שהכול קורה **על ה-VM עצמה**: `git`, `kubectl` ו-`helm` באותו shell. תכין שם זהות ו-SSH key (ראה [ssh](../../ssh/overview/)) ולא תסתמך על Mac.
 
+## 5 הדקות הראשונות על VM חדשה
+
+```bash title="runs on: any shell"
+git config --global user.name "<USER>"
+git config --global user.email "<EMAIL>"
+git config --global pull.ff only
+mkdir -p -m 700 ~/.ssh
+ssh-keygen -t ed25519 -f ~/.ssh/exam_key -C "exam-vm" -N ""
+cat ~/.ssh/exam_key.pub
+```
+
+הדבק את ה-`.pub` ב-GitLab (Avatar ← Edit profile ← SSH Keys), ואז:
+
+```bash title="runs on: any shell"
+ssh -F /dev/null -i ~/.ssh/exam_key -o IdentitiesOnly=yes -T git@<GITLAB_HOST>
+printf 'Host <GITLAB_HOST>\n  User git\n  IdentityFile ~/.ssh/exam_key\n  IdentitiesOnly yes\n' >> ~/.ssh/config
+chmod 600 ~/.ssh/config
+git clone git@<GITLAB_HOST>:<GROUP>/<REPO>.git
+```
+
+חזור על ה-`clone` לכל repo. הסבר ופתרון תקלות: [ssh](../../ssh/overview/).
+
+**איך מוודאים:** `Welcome to GitLab, @<USER>!`, ו-`git -C <REPO> log --oneline -1` מראה commit.
+
 ## להגדיר זהות פעם אחת (user.name / user.email)
 
 בלי זהות `git commit` נכשל או חותם בשם לא רצוי. ההגדרה נשמרת ב-`~/.gitconfig`.
@@ -60,10 +84,10 @@ cd <REPO>
 
 **איך מוודאים:** `git remote -v` מציג את אותה כתובת פעמיים (fetch ו-push), ו-`git log --oneline -3` מראה commits.
 
-למשוך branch או tag ספציפיים כבר בשלב ה-clone:
+למשוך branch ספציפי כבר בשלב ה-clone (`--single-branch` מוריד רק אותו):
 
 ```bash title="runs on: any shell"
-git clone --branch <BRANCH> git@<GITLAB_HOST>:<GROUP>/<REPO>.git
+git clone -b <BRANCH> --single-branch git@<GITLAB_HOST>:<GROUP>/<REPO>.git
 ```
 
 ## לראות איפה אני: status, branch, remotes
@@ -79,6 +103,8 @@ git branch -vv
 
 | פלט | משמעות |
 |---|---|
+לשנות כתובת של remote: `git remote set-url origin <URL>`, ואז `git remote -v` לאימות.
+
 | ` M file` | שונה, לא ב-staging |
 | `M  file` | שונה וב-staging (יכנס ל-commit) |
 | `??  file` | קובץ חדש שגיט לא עוקב אחריו |
@@ -107,7 +133,7 @@ git push
 git log --oneline --graph --decorate --all -15
 git diff
 git diff --staged
-git diff origin/main
+git diff origin/main..HEAD
 git show <SHA> --stat
 git log -p -- <FILE>
 ```
@@ -116,9 +142,21 @@ git log -p -- <FILE>
 |---|---|
 | `git diff` | שינויים שעוד לא ב-staging |
 | `git diff --staged` | מה ייכנס ל-commit הבא |
-| `git diff origin/main` | הפער בין העבודה שלך לבין מה שה-remote הכיר בפעם האחרונה |
+| `git diff origin/main..HEAD` | מה ה-commits שלך מוסיפים מעל `origin/main` (אחרי `fetch`) |
 | `git log --oneline HEAD..origin/main` | commits שיש ב-remote ואין אצלך |
 | `git show <SHA> --stat` | commit אחד: הודעה + קבצים |
+
+## מי שינה קובץ לאחרונה (למשל versions/dev.yaml)
+
+```bash title="runs on: any shell"
+git fetch
+git log origin/main -1 --format='%h %an %ad %s' -- <FILE>
+git blame -L 1,10 <FILE>
+```
+
+שורה ראשונה: ה-commit האחרון שנגע בקובץ (מחבר של בוט ה-CI = promote). `blame -L 1,10` מראה לכל שורה בטווח את ה-commit שכתב אותה.
+
+**איך מוודאים:** ה-`<SHA>` מה-log מופיע גם ב-`git show <SHA> --stat` עם הקובץ.
 
 ## לבדוק מה קרה ל-repo לפני שאני עורך
 

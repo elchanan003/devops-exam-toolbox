@@ -106,21 +106,41 @@ kubectl -n argocd get application <APP> -o jsonpath='{.status.conditions}{"\n"}'
 ## פעולות עם kubectl בלבד
 
 ```bash title="runs on: VM"
-# all apps with sync + health columns
-kubectl -n argocd get applications -o custom-columns=NAME:.metadata.name,SYNC:.status.sync.status,HEALTH:.status.health.status,REV:.status.sync.revision
-# last operation message (sync result or error)
-kubectl -n argocd get application <APP> -o jsonpath='{.status.operationState.message}{"\n"}'
+# all apps: sync, health, last operation phase
+kubectl -n argocd get applications -o custom-columns=NAME:.metadata.name,SYNC:.status.sync.status,HEALTH:.status.health.status,OP:.status.operationState.phase
+# last operation: phase + when it finished + message
+kubectl -n argocd get application <APP> -o jsonpath='{.status.operationState.phase}{"  "}{.status.operationState.finishedAt}{"\n"}{.status.operationState.message}{"\n"}'
+date -u
 # sync history (revisions applied)
 kubectl -n argocd get application <APP> -o jsonpath='{.status.history}{"\n"}'
 ```
 
-**רענון מיידי** במקום לחכות לפולינג, באמצעות annotation:
+**רענון מיידי** (קריאה מחדש של Git, בלי לחכות לפולינג):
 
 ```bash title="runs on: VM"
 kubectl -n argocd annotate application <APP> argocd.argoproj.io/refresh=hard --overwrite
 ```
 
-`hard` גם מנקה cache של manifests. Argo מסיר את ה-annotation לבד אחרי הרענון. **איך מוודאים:** `.status.sync.revision` מתעדכן ל-commit האחרון.
+`hard` גם מנקה cache של manifests, ו-Argo מסיר את ה-annotation לבד. **איך מוודאים:** `.status.sync.revision` מתעדכן ל-commit האחרון. חשוב: refresh **לא** מתניע מחדש sync שנכשל.
+
+## Argo ויתר: sync ידני
+
+:::caution[מלכודת · קרה בתרגול]
+`operationState.phase: Failed`: Argo ניסה sync אוטומטי **5 פעמים** ונעצר. הוא לא ינסה שוב לבד על אותו commit, ו-`refresh=hard` לא מחייה אותו. צריך **sync ידני**. ההודעה ב-`operationState.message` יכולה להיות **ישנה** (36 דקות): השווה `finishedAt` ל-`date -u` לפני שמסיקים שהשגיאה עדכנית.
+:::
+
+אפשרות 1: ב-UI, כפתור **Sync** באפליקציה. אפשרות 2: `kubectl patch` של השדה `operation` (הצורה מהתיעוד הרשמי, [Sync Applications with Kubectl](https://argo-cd.readthedocs.io/en/stable/user-guide/sync-kubectl/)):
+
+```bash title="runs on: VM"
+kubectl -n argocd patch application <APP> --type merge --dry-run=server -p '{"operation":{"initiatedBy":{"username":"admin"},"sync":{"syncStrategy":{"hook":{}}}}}'
+kubectl -n argocd patch application <APP> --type merge -p '{"operation":{"initiatedBy":{"username":"admin"},"sync":{"syncStrategy":{"hook":{}}}}}'
+```
+
+הפקודה הראשונה היא בדיקה בלבד (`--dry-run=server`). **איך מוודאים:** `OP` ב-`get applications` עובר ל-`Running` ואז `Succeeded`, וה-App `Synced`/`Healthy`. Argo מסיר את `.operation` בסיום.
+
+:::tip[עיקרון]
+כשכישלון הוא על **מצב ה-cluster** (PVC, StatefulSet, namespace/Secret חסרים), push ל-Git לא יעזור: מתקנים את ה-cluster ואז sync ידני. גם `bootstrap/` ו-scripts לא נקראים על ידי Argo: הוא קורא רק manifests.
+:::
 
 :::danger[זהירות]
 מחיקת Application עם finalizer מוחקת (cascade) את כל המשאבים שלו, כולל PVC ונתונים. מחיקת root מוחקת את כל ה-children. זה מה שרוצים ב-cleanup ולא באמצע עבודה.

@@ -99,6 +99,17 @@ docker image ls --format '{{.Repository}}:{{.Tag}}'
 docker info --format '{{.Driver}}'
 ```
 
+`.Driver` = `overlay2` (store קלאסי) או `overlayfs` (containerd store, ראה כרטיס 2).
+
+```bash title="runs on: VM"
+docker image inspect <IMAGE>:<CANDIDATE> --format '{{.Id}} {{.Created}}'
+docker manifest inspect <IMAGE>:<CANDIDATE>
+docker system df
+docker logout <REGISTRY>
+```
+
+`image inspect` בודק image מקומי (id, תאריך יצירה). `manifest inspect` שואל את ה-registry בלי למשוך (דורש login; ב-tag שלא קיים: `no such manifest`). `system df` קורא בלבד: כמה מקום תופסים images ו-containers. `logout` מנקה credentials מ-`~/.docker/config.json`.
+
 ב-shell executor ה-images נשארים על המכונה בין jobs (אותו daemon), ולכן build ו-publish יכולים להיות jobs נפרדים. עם docker executor לא. אל תריץ `docker system prune` על ה-VM של הקורס: הוא מוחק גם images ו-cache של שאר המערכת.
 
 ## כרטיס סביבה 1: DNS ב-`docker build`

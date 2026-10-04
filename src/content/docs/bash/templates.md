@@ -219,6 +219,10 @@ bash bootstrap/prepare-observability.sh                           # 2nd run: no 
 
 הציפייה: שני שמות ה-keys (`admin-user`, `admin-password` ב-TRIDENT) מופיעים. הערכים לא.
 
+:::caution[מלכודת · קרה בתרגול]
+ה-stub של ה-script הגיע עם 3 באגים: (1) בלוק postgres שהועתק כמו שהוא; (2) `$ENV` שלא הוגדר ב-script בלי ארגומנט, ו-`set -u` הפיל אותו (`unbound variable`); (3) נתיב ה-TLS שגוי (`$DIR/tls/<HOST>.crt`). ה-Secret `trident-grafana-admin` נבנה משני `--from-file` (`admin-user`, `admin-password`). הגרסה כאן נבדקה: `bash -n`, שתי הרצות ברצף עם `kubectl` מדומה, בלי `$ENV`.
+:::
+
 ## cleanup.sh
 
 מוחק את מה ש-bootstrap יצר, **בסדר**: קודם ה-Applications (ה-root קודם), אחר כך ה-namespaces, ובסוף ה-Secrets של ה-repos. מה שכבר לא קיים הוא לא שגיאה.

@@ -149,6 +149,27 @@ promote:prod:
 - כפתור ▶ ב-pipeline ישן מקדם את ה-candidate הישן. זה מכוון.
 - לא לוחצים על `promote:prod` לפני שבדקת ש-staging תקין (`/info` מחזיר `version` ו-`environment` נכונים).
 
+## promote:prod: למצוא וללחוץ
+
+`promote:prod` הוא job ידני של **אותו pipeline של `main`** (לא pipeline נפרד). הוא כותב `versions/prod.yaml` ב-gitops, ו-Argo מסנכרן.
+
+```text title="GitLab UI"
+trident-source → Build → Pipelines → the main pipeline (the run whose candidate you validated)
+  → stage promote → promote:prod → click ▶ (Run)
+```
+
+```bash title="runs on: any shell"
+git -C <REPO> pull
+git -C <REPO> log origin/main -1 --format='%h %an %s' -- <FILE>
+# TRIDENT: git -C trident-gitops log origin/main -1 --format='%h %an %s' -- apps/trident/versions/prod.yaml
+```
+
+**איך מוודאים:** ה-job ירוק; ב-`trident-gitops` commit חדש (`promote(prod): <CANDIDATE>`) ב-`versions/prod.yaml`; ב-Argo האפליקציה של prod `Synced` + `Healthy` בלי למחוק כלום.
+
+:::note
+`push` ל-Git לא יתקן כשל של Argo שנוגע ל-**מצב cluster** (למשל sync שנכשל 5 פעמים): ראה [argocd/operate](../../argocd/operate/).
+:::
+
 ## include דק
 
 ```yaml title="file: trident-source/.gitlab-ci.yml"

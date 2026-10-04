@@ -22,10 +22,11 @@ git switch -c <BRANCH>
 ```bash title="runs on: any shell"
 git switch -c <BRANCH> <SHA>
 git switch -c <BRANCH> origin/main
+git switch -c <BRANCH> origin/<BRANCH>
 git branch <BRANCH> <SHA>
 ```
 
-השורה האחרונה יוצרת branch **בלי** לעבור אליו.
+השורה לפני האחרונה יוצרת מקומי שעוקב אחרי branch שקיים ב-remote (אחרי `fetch`). האחרונה יוצרת branch **בלי** לעבור אליו.
 
 **איך מוודאים:** `git branch --show-current` מדפיס את השם, `git branch -vv` מראה אותו.
 
@@ -92,13 +93,13 @@ git tag <TAG> <SHA>
 git push origin <TAG>
 ```
 
-`git tag <TAG>` הוא tag קל על ה-commit הנוכחי. `-a` יוצר tag עם הודעה ומחבר. הוספת `<SHA>` מסמנת commit ישן.
+`git tag <TAG>` = tag **קל** (lightweight): רק שם על ה-commit הנוכחי. `-a` = tag **annotated**: אובייקט עם הודעה, מחבר ותאריך (`git show <TAG>` מציג אותם). שניהם נדחפים באותה פקודה. הוספת `<SHA>` מסמנת commit ישן.
 
 :::caution[מלכודת · קרה בתרגול]
 `git push` **לא** דוחף tags. בלי `git push origin <TAG>` ה-tag קיים רק אצלך, ו-Argo עם `targetRevision: <TAG>` לא ימצא אותו. כל ה-tags: `git push origin --tags`.
 :::
 
-**איך מוודאים:** `git ls-remote --tags origin` מציג `refs/tags/<TAG>`.
+**איך מוודאים:** `git ls-remote --heads --tags origin` מציג `refs/tags/<TAG>` (ל-annotated יופיע גם `<TAG>^{}` עם ה-commit עצמו) ואת כל ה-branches.
 
 ## לראות, למחוק ולעבור ל-tag
 

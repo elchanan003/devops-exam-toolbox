@@ -104,7 +104,7 @@ deployments:
       - name: signal-processor
         volumeMounts:
           - {name: sensors, mountPath: /etc/trident, readOnly: true}
-          - {name: pg, mountPath: /run/secrets, readOnly: true}
+          - {name: pg, mountPath: /run/secrets/trident, readOnly: true}
     extraVolumes:
       - {name: sensors, configMap: {name: trident-sensors}}
       - {name: pg, secret: {secretName: trident-postgres}}
@@ -118,13 +118,22 @@ deployments:
 | Secret | `secret: {secretName: ...}` — `secret` באות קטנה |
 | ConfigMap | `configMap: {name: ...}` — `configMap` עם C גדולה באמצע |
 
-מה שקורה: Secret שמוטען כ-volume נותן **קובץ לכל מפתח**. מפתח `postgres_password` + `mountPath: /run/secrets` = הקובץ `/run/secrets/postgres_password`, שהוא מה ש-`POSTGRES_PASSWORD_FILE` מצביע עליו.
+מה שקורה: Secret שמוטען כ-volume נותן **קובץ לכל מפתח**. מפתח `postgres_password` + `mountPath: /run/secrets/trident` = הקובץ `/run/secrets/trident/postgres_password`. את זה (הקובץ, לא התיקייה) מקבל `POSTGRES_PASSWORD_FILE`.
 
 :::caution[מלכודת · קרה בתרגול]
-נפלו כאן כמה דברים: `Secret` באות גדולה במקום `secret`; `mountPath:/run/secrets` בלי רווח; ובלחץ — postgres הוכנס בטעות לבלוק של שירות אחר. אחרי כל עריכה: render, ו-`grep -A3 'secretName:' /tmp/render.yaml`.
+`mountPath: /run/secrets` ישירות: ה-Pod נכשל עם
+`StartError … mounting … /var/run/secrets/kubernetes.io … read-only file system`.
+**סיבה:** `/var/run` הוא `/run`, אז ה-mount (read-only) מתנגש ב-mount של ה-token של ה-service account ב-`/var/run/secrets/kubernetes.io/serviceaccount`.
+**תיקון:** תת-תיקייה: `mountPath: /run/secrets/<APP>` (TRIDENT: `/run/secrets/trident`), ו-`POSTGRES_PASSWORD_FILE=/run/secrets/trident/postgres_password`.
+זה פגע גם ב-**postgres** וגם ב-**signal-processor** (ConfigMap path + volumeMount ב-values של האפליקציה) — signal-processor לא נפל "בגלל ה-DB".
+**בלי לוגים?** ה-container לא התחיל: `kubectl describe pod` ← Events.
 :::
 
-**איך מוודאים:** `grep -c 'mountPath: /run/secrets' /tmp/render.yaml` ו-`grep -c 'secretName: trident-postgres' /tmp/render.yaml` — שניהם 1 לשירות שמטעין.
+:::caution[מלכודת · קרה בתרגול]
+טעויות YAML נוספות: `Secret` באות גדולה במקום `secret`; `mountPath:/run/secrets/trident` בלי רווח אחרי `:`; postgres שהוכנס לבלוק של שירות אחר. אחרי כל עריכה: render, ו-`grep -A3 'secretName:' /tmp/render.yaml`.
+:::
+
+**איך מוודאים:** `grep -n 'mountPath: /run/secrets' /tmp/render.yaml` מציג **`/run/secrets/trident`** (לא `/run/secrets` לבד), ו-`grep -c 'secretName: trident-postgres' /tmp/render.yaml` = 1 לכל שירות שמטעין.
 
 ### services
 
@@ -188,9 +197,9 @@ fullnameOverride: postgres
 image: {repository: postgres, tag: "16.4"}
 env:
   - {name: POSTGRES_DB, value: trident}
-  - {name: POSTGRES_PASSWORD_FILE, value: /run/secrets/postgres_password}
+  - {name: POSTGRES_PASSWORD_FILE, value: /run/secrets/trident/postgres_password}
 extraSecrets:
-  - {name: trident-postgres, mountPath: /run/secrets}
+  - {name: trident-postgres, mountPath: /run/secrets/trident}
 customScripts:
   01-schema.sql: |
     CREATE TABLE detections (id serial);
@@ -205,14 +214,14 @@ storage:
 | `env` | רשימת `{name, value}` לסביבה של השרת. הסיסמה **כקובץ**: `POSTGRES_PASSWORD_FILE`, לא ערך |
 | `extraSecrets` | `[{name: <Secret קיים>, mountPath: <dir>}]` — **כל** המפתחות של ה-Secret הופכים לקבצים בתיקייה |
 | `customScripts` | קבצי SQL שרצים פעם אחת על data dir ריק |
-| `storage.className` | ה-StorageClass של ה-PVC. **חובה** כשאין default |
+| `storage.className` | ה-StorageClass של ה-PVC. **חובה** כשאין default. מגדירים אותו כאן (ב-Git), **לא** הופכים StorageClass ל-default בקלאסטר — [storage-probes](../../kubernetes/storage-probes/) |
 | `storage.requestedSize` | גודל ה-PVC |
 
 **איך מוודאים:** `grep -c 'storageClassName: course-local-path' /tmp/render.yaml` = 1 (אם `className` חסר — 0 וה-PVC ייתקע ב-Pending, ראו [storage-probes](../../kubernetes/storage-probes/#pod-pending-בגלל-pvc-סולם-האבחון)).
 `grep -E '^kind: StatefulSet|secretName' /tmp/render.yaml` מראה StatefulSet ו-`secretName: trident-postgres`.
 
 :::caution[מלכודת · קרה בתרגול]
-בלי `className` ה-PVC נוצר בלי StorageClass ו-`postgres-0` נשאר Pending. התיקון ב-**values** (ב-Git), לא ב-`kubectl edit`. אבחון מלא: [storage-probes](../../kubernetes/storage-probes/#pod-pending-בגלל-pvc-סולם-האבחון).
+בלי `className` ה-PVC נוצר בלי StorageClass ו-`postgres-0` נשאר Pending. התיקון ב-**values** (ב-Git), לא ב-`kubectl edit` ולא בהפיכת StorageClass ל-default (זה לא ב-Git, והוא ייקשר גם PVC לא קשורים). אם ה-StatefulSet כבר קיים, `volumeClaimTemplates` immutable ו-sync ייכשל — ראו [storage-probes](../../kubernetes/storage-probes/). אבחון מלא: [storage-probes](../../kubernetes/storage-probes/#pod-pending-בגלל-pvc-סולם-האבחון).
 :::
 
 ## redis (groundhog2k 2.4.7)

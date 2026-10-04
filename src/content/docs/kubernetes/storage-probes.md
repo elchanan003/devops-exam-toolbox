@@ -55,7 +55,7 @@ kubectl get sc                                        # 5. does the class exist,
 | 5 | `course-local-path` קיים, **לא** default | אף אחד לא נותן class אוטומטית |
 
 :::caution[מלכודת · קרה בתרגול]
-`storage:` ב-`postgres/base.yaml` מולא עם `requestedSize: 1Gi` בלבד. בלי `className` ה-PVC נוצר ללא class, ובלי default ב-cluster הוא לא נקשר. התיקון הוא ב-**values** (ב-Git), לא `kubectl edit pvc` — Argo יחזיר, ו-PVC הוא בעל spec שלא ניתן לשנות.
+`storage:` ב-`postgres/base.yaml` מולא עם `requestedSize` בלבד. בלי `className` ה-PVC נוצר בלי class, ובלי default ב-cluster הוא לא נקשר. התיקון: `storage.className` ב-**values** (Git). לא `kubectl edit pvc`: Argo יחזיר, ו-PVC הוא immutable.
 :::
 
 ```yaml title="file: gitops/apps/postgres/base.yaml (storage block)"
@@ -64,23 +64,60 @@ storage:
   requestedSize: 1Gi
 ```
 
-אחרי push, Argo מסנכרן. ה-PVC כבר נוצר בלי class, ושדה `storageClassName` של PVC קיים לא ניתן לשינוי; גם ה-`volumeClaimTemplates` של StatefulSet קיים נעול. אם ה-sync נכשל על כך, או שה-PVC נשאר Pending, צריך שה-PVC (ואם צריך גם ה-StatefulSet) ייווצרו מחדש מה-values החדשים. הנוהל לא נבדק מול cluster חי כאן — בדוק את הודעת השגיאה ב-Argo לפני שמוחקים:
+:::caution[מלכודת · קרה בתרגול]
+לעשות ל-`course-local-path` את ה-default של ה-cluster זה **התיקון הלא נכון**: ה-default לא נמצא ב-Git (אחרי reset של ה-cluster הוא נעלם), והוא גם יקשור PVC אחרים שלא קשורים לפרויקט. ה-class שייך ל-values של האפליקציה.
+:::
+
+## אחרי הוספת className: sync נכשל על `volumeClaimTemplates`
+
+ה-StatefulSet כבר קיים עם ה-`volumeClaimTemplates` הישן, והשדה immutable. Argo נכשל עם:
+
+```text title="example: Argo sync error"
+StatefulSet.apps "postgres" is invalid: spec: Forbidden: updates to statefulset spec for fields other than 'replicas', 'ordinals', 'template', 'updateStrategy', 'persistentVolumeClaimRetentionPolicy' and 'minReadySeconds' are forbidden
+```
+
+התיקון: למחוק את ה-StatefulSet **ואת ה-PVC שלו**. Argo יוצר מחדש את שניהם מ-Git, והפעם עם ה-class.
 
 ```bash title="runs on: VM"
-kubectl -n <NS> describe pvc postgres-data-postgres-0   # Pending, no Volume: nothing bound yet
-kubectl -n <NS> delete pvc postgres-data-postgres-0     # recreated by the StatefulSet
+kubectl -n <NS> get pvc                                 # 1. name of the PVC, STATUS, STORAGECLASS
+kubectl -n <NS> delete statefulset <SERVICE> --dry-run=client
+kubectl -n <NS> delete statefulset <SERVICE>            # TRIDENT: <SERVICE> = postgres
+kubectl -n <NS> delete pvc <PVC> --dry-run=client
+kubectl -n <NS> delete pvc <PVC>                        # TRIDENT: postgres-data-postgres-0
 kubectl -n <NS> get pvc,pods -w                         # Ctrl+C when Bound / Running
 ```
 
-אם ה-PVC החדש שוב נוצר בלי class, ה-StatefulSet הקיים עדיין נושא את ה-`volumeClaimTemplates` הישן: מחק גם את ה-StatefulSet (`kubectl -n <NS> delete statefulset <SERVICE>`; Argo יוצר אותו מחדש מה-values) ואז את ה-PVC. הצעד הזה לא נבדק כאן מול cluster חי.
+- מוחקים StatefulSet + PVC, **לא** את ה-Pod ולא את ה-StorageClass (`course-local-path` נשאר).
+- אם ה-sync כבר נכשל 5 פעמים, Argo ויתר: [manual sync](../../argocd/operate/#argo-ויתר-sync-ידני).
 
-:::danger[זהירות]
-מחיקת PVC עם data אמיתי מוחקת אותו (`RECLAIMPOLICY: Delete`). כאן זה בטוח רק כי ה-PVC מעולם לא נקשר. קודם `describe pvc` ובדוק שהוא Pending ללא `Volume`.
+**איך מוודאים:** `get pvc` — `Bound` ו-`STORAGECLASS` = `course-local-path`; `postgres-0` — `1/1 Running`; ה-App `Synced`/`Healthy`.
+
+:::tip[עיקרון]
+לפני מחיקה: מי מחזיק את ה-data? האם ה-controller כבר מטפל בזה? כאן המחיקה בטוחה **רק** כי ה-PVC מעולם לא נקשר ואין data. עם data אמיתי (`RECLAIMPOLICY: Delete`) מחיקת PVC מוחקת אותו.
 :::
 
-**איך מוודאים:** `get pvc` — `Bound` ו-`STORAGECLASS` מלא; `postgres-0` — `1/1 Running`; App חוזר ל-`Synced`/`Healthy`. בדיקת הישרדות: מחק את ה-Pod וודא שה-data נשאר ([verify/overview](../../verify/overview/)).
+**prod:** אם התיקון ב-Git נכנס **לפני** ה-sync הראשון, אין StatefulSet ואין PVC. אין מה למחוק; ה-PVC נוצר ישר עם ה-class (כך קרה ב-prod).
 
 הערה: `storage: {}` (כמו ב-redis) משאיר volume זמני — ה-data נעלם עם ה-Pod. לפי ה-contract, postgres דורש storage מתמשך.
+
+## StatefulSet מול Deployment: מתי מוחקים Pod ומתי StatefulSet
+
+שני מקרים שנראים דומים והם שונים לגמרי:
+
+| מצב | מה קורה | מה עושים |
+|---|---|---|
+| Pod של StatefulSet שבור, ותיקנת את ה-`template` (למשל `mountPath`) | ה-rolling update **מחכה שה-Pod הישן יהיה Ready**, אז Pod שבור לא מוחלף לעולם | `kubectl -n <NS> delete pod <POD>`: ה-StatefulSet יוצר אותו מחדש עם ה-spec החדש |
+| שינוי ב-`volumeClaimTemplates` | השדה **immutable**: ה-sync נכשל | למחוק StatefulSet + PVC (הסעיף למעלה) |
+
+- `template` מותר לשינוי, לכן אין מחיקת StatefulSet: רק Pod.
+- **Deployment** מחליף Pods לבד: ה-Pod הישן יורד **אחרי** שהחדש Ready. אל תמחק אותם ידנית.
+
+```bash title="runs on: VM"
+kubectl -n <NS> delete pod postgres-0          # StatefulSet only, <POD> = postgres-0
+kubectl -n <NS> rollout status sts/<SERVICE>   # TRIDENT: postgres
+```
+
+**איך מוודאים:** `get pods` — ה-Pod החדש `1/1`, ו-`describe pod` מראה את ה-`mountPath`/image החדש.
 
 ## probes: live, ready, startup
 

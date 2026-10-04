@@ -73,11 +73,15 @@ kubectl -n <NS> create secret generic <SECRET> --from-file=postgres_password=<FI
 
 ## מאונט כקובץ, לא כ-env
 
-Secret כ-**קובץ** מוגן בהרשאות; משתנה סביבה דולף ל-child processes, ל-`kubectl describe` וללוגים. לכן `POSTGRES_PASSWORD_FILE=/run/secrets/postgres_password` ולא ערך. ב-Compose, `secrets:` מתורגם ל-Secret **volume**, לא ל-`envFrom secretRef`. מיפוי: [architecture/compose-to-k8s](../../architecture/compose-to-k8s/).
+Secret כ-**קובץ** מוגן בהרשאות; משתנה סביבה דולף ל-child processes, ל-`kubectl describe` וללוגים. לכן `POSTGRES_PASSWORD_FILE=/run/secrets/<APP>/postgres_password` (TRIDENT: `<APP>` = `trident`) ולא ערך. ב-Compose, `secrets:` מתורגם ל-Secret **volume**, לא ל-`envFrom secretRef`. מיפוי: [architecture/compose-to-k8s](../../architecture/compose-to-k8s/).
 
 ```bash title="runs on: VM"
-kubectl -n <NS> exec deploy/<SERVICE> -- ls -l /run/secrets
+kubectl -n <NS> exec deploy/<SERVICE> -- ls -l /run/secrets/<APP>
 ```
+
+:::caution[מלכודת · קרה בתרגול]
+לא מאונטים Secret ב-`/run/secrets` עצמו: זה מתנגש עם ה-mount של ה-service-account token (`/var/run/secrets/kubernetes.io/…`) וה-Pod נופל ב-`StartError … read-only file system`. תמיד תת-תיקייה, וה-env מצביע על **הקובץ**, לא על התיקייה. פירוט: [overview](../overview/#אין-לוגים-ה-container-לא-התחיל).
+:::
 
 **איך מוודאים:** הקובץ קיים, בגודל > 0. אם התיקייה ריקה — `secretName` שגוי ב-values, או Secret חסר ב-namespace.
 

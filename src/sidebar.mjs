@@ -1,5 +1,6 @@
 // Single list of tabs: [Hebrew label, folder under src/content/docs]. Adding a tab = one line.
 const tabs = [
+  ['שליפה מהירה', 'quick'],
   ['התמונה הגדולה', 'architecture'],
   ['Git', 'git'],
   ['SSH וגישה', 'ssh'],

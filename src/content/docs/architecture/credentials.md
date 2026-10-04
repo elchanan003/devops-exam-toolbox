@@ -27,7 +27,7 @@ sidebar:
 | 5 | Argo | לקרוא `trident-templates` | identity לקריאה בלבד | `read_repository`; Reporter | Secret נפרד ב-`argocd` | `ComparisonError`, `Unknown` |
 | 6 | **kubelet** בכל env | למשוך images | **deploy token** על `trident-source` | `read_registry` בלבד | Secret `kubernetes.io/dockerconfigjson` **בכל namespace** + `imagePullSecrets` | `ImagePullBackOff` |
 | 7 | ה-runner | להריץ jobs | registration token `glrt-` | project runner (group runner אם הכפתור קיים; בתרגול ב-Free חסר); tag נכון | `/etc/gitlab-runner/config.toml` ב-VM | job תקוע, `no runner for tags` |
-| 8 | Postgres + signal-processor | סיסמת DB | קובץ סיסמה לכל env | - | Secret generic, מפתח `postgres_password`, מותקן כקובץ | Pod ב-`CrashLoopBackOff` / לא מתחבר |
+| 8 | Postgres + signal-processor | סיסמת DB | קובץ סיסמה לכל env | - | Secret generic, מפתח `postgres_password`, מותקן כקובץ בתת-תיקייה (`/run/secrets/<APP>`) | Pod ב-`CrashLoopBackOff` / `read-only file system` |
 | 9 | Grafana | admin | קבצי credentials | - | Secret admin ב-`<NS>` של observability | Grafana לא עולה |
 | 10 | Ingress | TLS | CA + cert לכל host | - | Secret `tls` **בכל namespace** | cert שגוי / 404 |
 

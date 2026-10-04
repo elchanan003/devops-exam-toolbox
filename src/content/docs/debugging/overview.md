@@ -21,6 +21,10 @@ sidebar:
 | **Isolation** | משנים משתנה אחד ורואים אם השגיאה נעלמת |
 | **קוד או סביבה?** | ראה למטה |
 | **איזה run אני קורא?** | בדוק את ה-candidate: branch + תאריך |
+| **Timestamp לפני אמון בהודעה** | `finishedAt` מול `date -u`: הודעה בת 36 דקות אינה הכשל הנוכחי |
+| **אין לוגים = לא התחיל** | `kubectl describe pod` ו-Events, לא `logs` |
+| **לפני `delete`: מי מחזיק את הנתונים?** | והאם ה-controller כבר מטפל? (Deployment מחליף Pods לבד; StatefulSet לא מחליף Pod שבור) |
+| **`Synced`/`Healthy` ≠ עובד** | בודקים `/info`: [verify](../../verify/overview/) |
 | **הפלט של git עצמו** | `merge --ff-only` נכשל? הסיבה בשורה 2 של הפלט |
 | **Pre-flight** | להריץ מקומית מה ש-Argo/CI ירוץ, ולדעת אילו פרמטרים השמטת |
 
@@ -32,6 +36,7 @@ sidebar:
 | promote 403 **אחרי** commit מוצלח | credential / סביבה | העבודה עצמה הצליחה, ההרשאה לא |
 | Dockerfile חסר | קוד | קובץ שלא קיים ב-repo |
 | `Cannot connect to the Docker daemon` | סביבה | ה-daemon לא רץ / אין הרשאה |
+| `Error: open <FILE>: no such file or directory` | נתיב | שגיאת נתיב, לא YAML |
 
 באגי ה-DNS וה-`blob unknown` ב-build היו סביבה, לא קוד: [env-cards](../env-cards/).
 
@@ -70,7 +75,11 @@ helm template <RELEASE> <CHART_DIR> -f <FILE> -f <FILE> -f <FILE> --set defaultI
 
 ## Pre-flight: לדעת מה השמטת
 
-מרנדרים מקומית מה ש-Argo ירנדר, עם tag אמיתי. מה שונה מ-Argo: `$values` לא קיים ב-bash (נתיבים אמיתיים), `-f` חוזר לכל קובץ, ו-`namespace` ב-render לא באג אם לא העברת `-n`.
+מרנדרים מקומית מה ש-Argo ירנדר, עם tag אמיתי. מה שונה מ-Argo: `$values` לא קיים ב-bash (נתיבים אמיתיים), `-f` חוזר לכל קובץ וקורא את **המילה הבאה** (`-f charts/x` הופך את ה-chart לקובץ values), ו-`namespace` ב-render לא באג אם לא העברת `-n`.
+
+:::caution[מלכודת · קרה בתרגול]
+`operationState.message` של 36 דקות נקרא כאילו הוא עדכני. לפני שמגיבים להודעה של Argo: `finishedAt` מול `date -u`.
+:::
 
 :::tip[עיקרון]
 קרא מה כתוב, לא מה שניחשת. אם ההודעה לא מזכירה הרשאה, אל תתחיל מהרשאות.

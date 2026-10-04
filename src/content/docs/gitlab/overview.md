@@ -21,6 +21,25 @@ GitLab הוא ה-source of truth: ה-CI רץ ממנו, Argo CD קורא ממנו
 | runner שמריץ jobs | [runners](../runners/) |
 | נתיבי image, deploy token למשיכה | [registry](../registry/) |
 
+## איפה ב-UI: הכול במקום אחד
+
+כל הנתיבים מתחילים ב-`Project →` (או `Group →` כשכתוב). ניסוח התפריט משתנה קצת בין גרסאות.
+
+| מה | נתיב |
+|---|---|
+| Members (role) | `Manage → Members` |
+| Access tokens (Premium) | `Settings → Access tokens` |
+| Deploy tokens | `Settings → Repository → Deploy tokens` |
+| CI/CD variables | `Settings → CI/CD → Variables` |
+| Runners | `Settings → CI/CD → Runners` |
+| Protected branches | `Settings → Repository → Protected branches` |
+| Container registry | `Deploy → Container registry` |
+| Pipelines / Jobs | `Build → Pipelines` / `Build → Jobs` |
+| Pipeline editor (Validate) | `Build → Pipeline editor` |
+| Environments | `Operate → Environments` |
+| PAT (אישי) | Avatar ← `Edit profile → Access tokens` |
+| SSH keys (אישי) | Avatar ← `Edit profile → SSH Keys` |
+
 ## group path מול display name
 
 ל-group יש שני שמות. ה-URL, ה-clone וה-`repoURL` משתמשים תמיד ב-**path**, לא ב-display name.

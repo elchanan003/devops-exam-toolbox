@@ -26,7 +26,7 @@ reference למילות המפתח שמופיעות ב-pipeline של TRIDENT. ק�
 | `needs` | job | גרף תלות + קבלת artifacts | בלי `needs` ה-job מחכה לכל ה-stage הקודם |
 | `artifacts: reports: dotenv` | job | מייצא variables ל-jobs מאוחרים | עם `needs`: רק מה-jobs שמופיעים בו |
 | `rules` | job | תנאי הרצה | `if` על משתנה; ללא match = ה-job לא נוצר |
-| `when: manual` | job / rules | נדרש click | ה-pipeline לא נחסם בגללו |
+| `when: manual` | job / rules | נדרש click | ב-`rules` ברירת המחדל `allow_failure: false` (ה-pipeline "blocked" עד הלחיצה); ברמת job `true` |
 | `environment` | job | רושם deployment | מופיע ב-`Operate → Environments` |
 | `resource_group` | job | מונע ריצה במקביל | jobs ברמה זו ירוצו בטור |
 | `tags` | job | בוחר runner | חייב להתאים ל-runner |
@@ -132,6 +132,7 @@ promote:prod:
 ```
 
 `rules` ברמת job: ה-job נוצר רק אם יש התאמה. `when: manual` יוצר כפתור ▶; הוא לא רץ לבד.
+לפי התיעוד: `allow_failure` ברירת המחדל היא `false` כש-`when: manual` נמצא בתוך `rules`, ו-`true` כש-`when: manual` ברמת job. ב-`rules` ה-pipeline נשאר `blocked` עד שלוחצים; כדי שלא יחסום הוסף `allow_failure: true`.
 
 ## environment ו-resource_group
 

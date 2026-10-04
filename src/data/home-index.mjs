@@ -1,6 +1,7 @@
 // Home page index: one block per tab, each with its most-used tasks as deep links.
 // href is relative to the site base (no leading slash). Add a block = add an object; order = display order.
 export const firstAid = [
+  { href: 'quick/overview/', title: 'שליפה מהירה', text: 'הפקודות הנפוצות, מסך אחד לכל תחום' },
   { href: 'debugging/symptoms/', title: 'טבלת תקלות', text: 'הודעת שגיאה ← סיבה ← פקודת בדיקה' },
   { href: 'architecture/overview/', title: 'איפה זה רץ?', text: 'VM, CI job, GitLab UI, Argo — ומאיפה המשתנים' },
   { href: 'bash/templates/', title: 'סקריפטים מלאים', text: 'prepare, promote, cleanup — להעתקה' },

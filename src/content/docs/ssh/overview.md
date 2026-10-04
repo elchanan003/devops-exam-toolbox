@@ -196,6 +196,8 @@ ssh-keygen -t ed25519 -f <FILE> -C "exam-vm" -N ""
 cat <FILE>.pub
 ssh -F /dev/null -i <FILE> -o IdentitiesOnly=yes -T git@<GITLAB_HOST>
 git clone git@<GITLAB_HOST>:<GROUP>/<REPO>.git
+git config --global user.name "<USER>"
+git config --global user.email "<EMAIL>"
 ```
 
 1. `mkdir` + `ssh-keygen` (נתיב מלא ב-`-f`).

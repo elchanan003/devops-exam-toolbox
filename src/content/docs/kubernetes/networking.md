@@ -92,6 +92,26 @@ curl --cacert <FILE> --resolve <HOST>:<PORT>:<VM_IP> https://<HOST>:<PORT>/info
 
 הדפדפן עדיין צריך את ה-NodePort ב-URL: `https://<HOST>:<PORT>/`.
 
+## לקרוא את `/info` ולהוכיח שה-DB מקבל data
+
+Synced/Healthy לא מוכיח שהמערכת עובדת. קרא את `/info` **פעמיים** בהפרש של כמה שניות:
+
+| שדה | מה טוב |
+|---|---|
+| `version` | שווה ל-candidate שעשה promote ל-`<ENV>` |
+| `accepted` | **עולה** בין שתי הקריאות = data זורם |
+| `queue_depth` | קרוב ל-0 (התור מתרוקן) |
+| `dropped_queue_full` | **ישר** (לא עולה); מספר גדול ויציב הוא היסטוריה, לא תקלה |
+
+`detections=0` **צפוי** ב"ים שקט" (ה-contract: quiet sea → אין זיהוי). כדי להוכיח את מסלול ה-DB מפעילים תרחיש `quick-transit` בסימולטור (פורט ops `9101`; ב-image יש python ואין `curl`):
+
+```bash title="runs on: VM"
+kubectl -n <NS> exec deploy/acoustic-simulator -- python -c "import urllib.request as u; u.urlopen(u.Request('http://127.0.0.1:9101/scenarios/quick-transit', method='POST'))"
+kubectl -n <NS> exec postgres-0 -- psql -U trident -d trident -c 'select count(*) from detections'
+```
+
+**איך מוודאים:** אחרי כדקה (התרחיש נמשך 60 שניות) `count` גדול מ-0. הרץ שוב את השאילתה ומספר עולה = מסלול simulator → ingest-api → redis → signal-processor → postgres עובד. (`trident`/`trident` = `POSTGRES_USER`/`POSTGRES_DB` ב-values.)
+
 ## NetworkPolicy: default-deny ו-allow
 
 ב-Kubernetes ברירת המחדל שטוחה: כל Pod מדבר עם כל Pod. NetworkPolicy הופכת את זה ל-**allowlist**: קודם חוסמים הכול, ואז פותחים רק את מסלול הנתונים.

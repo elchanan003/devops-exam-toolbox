@@ -46,7 +46,7 @@ sidebar:
 
 ## למה Secret כקובץ
 
-קובץ מוגן בהרשאות; משתנה סביבה דולף ל-child processes, ל-`kubectl describe` ולוגים. שרת ה-postgres קורא `POSTGRES_PASSWORD_FILE`. `extraSecrets` מותקן עם **כל** המפתחות כקבצים, אז `mountPath: /run/secrets` + מפתח `postgres_password` נותן `/run/secrets/postgres_password`.
+קובץ מוגן בהרשאות; משתנה סביבה דולף ל-child processes, ל-`kubectl describe` ולוגים. שרת ה-postgres קורא `POSTGRES_PASSWORD_FILE`. `extraSecrets` מותקן עם **כל** המפתחות כקבצים, אז `mountPath: /run/secrets/<APP>` (TRIDENT: `/run/secrets/trident`) + מפתח `postgres_password` נותן `/run/secrets/trident/postgres_password`. **לא** `/run/secrets` ישירות: זה מתנגש ב-mount של ה-service account token וה-Pod נופל עם `read-only file system` ([helm/values](../../helm/values/)).
 
 ## בדיקה אחרי התרגום
 

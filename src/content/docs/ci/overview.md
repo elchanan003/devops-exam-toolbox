@@ -76,7 +76,36 @@ Pipelines list:     Project → Build → Pipelines
 A job's log:        click the job in the pipeline graph
 Edit + validate:    Project → Build → Pipeline editor (Validate tab checks syntax)
 Environments:       Project → Operate → Environments
-Run manually:       Pipelines → Run pipeline (pick the branch)   or click ▶ on a manual job
+Run manually:       Pipelines → New pipeline (pick the branch)   or click ▶ on a manual job
 ```
 
 ניסוחי תפריט משתנים בין גרסאות (`CI/CD → Pipelines` בגרסאות ישנות). אין pipeline בכלל? סיבות: branch שאינו מותר ב-`workflow:rules`, include לא נפתר, או אין runner עם ה-tag. טבלת תסמינים: [debugging/symptoms](../../debugging/symptoms/). runner שלא קולט: [gitlab/runners](../../gitlab/runners/).
+
+## להריץ pipeline בלי שינוי קוד
+
+```bash title="runs on: any shell"
+git commit --allow-empty -m "trigger"
+git push
+```
+
+commit ריק יוצר pipeline חדש ל-branch. בלי commit: `Build → Pipelines → New pipeline`, בחר את ה-branch ← Run pipeline (עדיין כפוף ל-`workflow:rules`).
+
+**איך מוודאים:** pipeline חדש ברשימה עם ה-`<SHA>` של ה-commit הריק.
+
+## retry או pipeline חדש
+
+| מה שינית | מה עושים |
+|---|---|
+| runner, tag, CI/CD variable, הרשאה ב-UI | `Retry` ל-job שנכשל (אותו commit, אותו `CANDIDATE`) |
+| קוד, `Dockerfile`, YAML | commit חדש ← pipeline חדש (retry מריץ את הקוד הישן) |
+| קבצי `trident-ci` שנטענים ב-`include` | pipeline חדש (או `New pipeline`) ב-source |
+
+## איזה candidate ה-job השתמש
+
+בקריאת log: שורת `CANDIDATE=…` ב-job `candidate`; ב-job מאוחר `echo "$CANDIDATE"`. בלי log: ב-job `candidate` ← Job artifacts ← Browse ← `candidate.env`.
+
+**איך מוודאים:** ה-branch והתאריך ב-`CANDIDATE` תואמים ל-pipeline שרצית (ראה [patterns](../patterns/#candidate-תג-אחד-לכל-ה-pipeline-dotenv)). ב-gitops: `git log origin/main -1 -- <FILE>` מראה מי כתב את ה-tag.
+
+## לבדוק YAML לפני push (CI Lint)
+
+`Build → Pipeline editor` ← לשונית **Validate** (מדמה pipeline ומציג שגיאות), ולשונית **Full configuration** מציגה את ה-YAML אחרי include ו-extends. **איך מוודאים:** `Pipeline syntax is correct`.

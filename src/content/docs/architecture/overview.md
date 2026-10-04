@@ -75,7 +75,7 @@ kubelet pulls the image with Secret (deploy token, read_registry) -> Pod runs
 |---|---|---|
 | push ל-branch `dev` | `promote:dev` אוטומטי | DEV |
 | push ל-`main` | `promote:staging` אוטומטי | STAGING |
-| לחיצה ידנית על `promote:prod` | אותו pipeline, אותו `$CANDIDATE`, בלי build מחדש | PROD |
+| לחיצה על `promote:prod` (כפתור ב-pipeline של `main`) | אותו pipeline, אותו `$CANDIDATE`, בלי build מחדש; נכתב `versions/prod.yaml` | PROD |
 
 - ה-candidate הוא מחרוזת `<BRANCH>-YYYYMMDD-<SHA>`, מחושבת **פעם אחת** ב-job `candidate` ועוברת ב-dotenv ל-jobs הבאים (`needs`).
 - ה-job הידני מקדם את ה-candidate של ה-pipeline שלו, לא "מה שנמצא עכשיו ב-STAGING".
@@ -92,15 +92,17 @@ kubelet pulls the image with Secret (deploy token, read_registry) -> Pod runs
 | shell ב-VM | `kubectl`, `helm`, `docker`, סקריפטי bootstrap, `git` | kubeconfig על ה-VM; משתנים רק מ-`export` באותו shell (ובכל טרמינל חדש); קבצי credentials תחת `~/.local/share/trident/` |
 | CI job על ה-runner | `docker build/push`, `promote.sh`, clone של `trident-ci` | משתני GitLab CI/CD (group/project) + משתנים מוגדרים-מראש (`CI_REGISTRY_USER`...). **לא** `export` שלך |
 | GitLab UI | יצירת projects, tokens, variables, runners, הכפתור הידני | אתה, מחובר כמשתמש |
-| Argo בתוך ה-cluster | `helm template`, diff, apply | repo Secrets ב-namespace `argocd`; ה-`$values` קיים רק כאן |
+| Argo בתוך ה-cluster | `helm template`, diff, apply; קורא **manifests ו-values בלבד**, לא את `bootstrap/` | repo Secrets ב-namespace `argocd`; ה-`$values` קיים רק כאן |
 
 :::caution[מלכודת · קרה בתרגול]
 הסקריפט נפל עם `!URL_VAR: export TRIDENT_GITOPS_URL=...` והמשתנה היה ריק. הוא הוגדר כמשתנה GitLab CI/CD, אבל הסקריפט רץ ב-shell של ה-VM. משתני CI קיימים רק בתוך job. תיקון: `export` באותו shell, ובדיקה עם `echo "$TRIDENT_GITOPS_URL"`.
 :::
 
 :::caution[מלכודת · קרה בתרגול]
-`helm template ... -f $values/apps/...` ב-shell נכשל: `$values` הוא שם של Argo בלבד וריק ב-bash. הצורה המקומית: `-f` חוזר לכל קובץ עם נתיב אמיתי.
+`helm template ... -f $values/apps/...` ב-shell נכשל: `$values` הוא שם של Argo בלבד וריק ב-bash. הצורה המקומית: `-f` חוזר לכל קובץ עם נתיב אמיתי, ו-`-f` קורא את המילה הבאה (לא לשים אותו לפני ה-chart).
 :::
+
+**`git push` לא מתקן כשל שנובע ממצב ה-cluster** (Secret חסר, או `Failed` אחרי 5 ניסיונות sync): סקריפטי `bootstrap/` רצים ידנית ב-VM ו-Argo לא קורא אותם. אחרי התיקון: sync ידני, [argocd/operate](../../argocd/operate/).
 
 ## מה הלאה
 

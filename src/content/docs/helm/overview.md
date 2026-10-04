@@ -17,22 +17,20 @@ sidebar:
 ב-Argo ה-Application מגדיר: chart, רשימת `valueFiles` לפי סדר, ו-namespace. אצלך בשורת הפקודה צריך לכתוב את כל זה ידנית.
 
 ```bash title="runs on: VM"
-helm template <RELEASE> <CHART_DIR> -n <NS> \
-  -f base.yaml -f <ENV>.yaml -f versions/<ENV>.yaml > /tmp/render.yaml
+helm template <RELEASE> <CHART_DIR> -n <NS> -f <FILE> -f <FILE> -f <FILE> > /tmp/render.yaml
 # TRIDENT: helm template trident charts/nxs-universal-chart -n trident-dev -f base.yaml -f dev.yaml -f versions/dev.yaml
 ```
 
-- `<RELEASE>` — שם ה-release, כמו ב-Application (`trident`, `postgres`, `redis`).
-- `<CHART_DIR>` — תיקיית ה-chart (אחרי `helm pull --untar` או clone של repo ה-templates).
-- כל קובץ values צריך `-f` **משלו**. הסדר הוא הסדר של `valueFiles` ב-Argo.
-- הרץ מתוך תיקיית ה-values (`gitops/apps/trident/`), או כתוב נתיבים מלאים.
+**כלל: `-f` תמיד לוקח את המילה שאחריו.** סדר הארגומנטים: release, chart, ואז flags. כל קובץ values מקבל `-f` משלו, בסדר של `valueFiles` ב-Argo.
+`<RELEASE>` = שם ה-Application/release (`trident`, `postgres`, `redis`). `<CHART_DIR>` = תיקיית ה-chart. ה-values יושבים ב-clone של repo ה-gitops (לא ב-repo ה-templates): הרץ מתוך תיקיית ה-values או כתוב נתיבים מלאים.
 
-**איך מוודאים:** יציאה ב-exit code 0, והקובץ `/tmp/render.yaml` לא ריק. אחרי זה בודקים תוכן עם `grep -c` (ראו למטה).
+**איך מוודאים:** exit code 0 והקובץ `/tmp/render.yaml` לא ריק. אחר כך `grep -c` (ראו למטה).
 
 :::caution[מלכודת · קרה בתרגול]
-ה-render המקומי הראשון נכשל בשלושה מקומות בבת אחת: (1) `-f $values/...` — `$values` הוא שם שקיים **רק ב-Argo** (ה-source עם `ref: values`); ב-bash הוא ריק.
-(2) `-f` לא חזר על עצמו לפני כל קובץ. (3) `.` תועה בפקודה הפך להיות שם ה-release.
-כלל: כשמדמים כלי, צריך לדעת איזה פרמטרים השמטת.
+`helm template trident -f charts/x …` נכשל 3 פעמים: `-f` בלע את נתיב ה-chart והתייחס אליו כאל קובץ values. וה-values חיפשו בתיקייה הלא נכונה.
+`Error: open …: no such file or directory` = **שגיאת נתיב**, לא YAML. בדוק `ls` על כל נתיב ב-`-f`, ושה-chart הוא המילה הראשונה אחרי ה-release.
+בגרסה אחרת של אותה טעות: `Error: non-absolute URLs should be in form of repo_name/path_to_chart, got: trident` = ה-chart נבלע.
+עוד שני באגים מאותו ניסיון: `-f $values/...` (`$values` קיים רק ב-Argo, ב-bash הוא ריק) ו-`.` תועה שהפך לשם ה-release.
 :::
 
 ### שגיאות נפוצות בפקודה עצמה
@@ -42,6 +40,8 @@ helm template <RELEASE> <CHART_DIR> -n <NS> \
 | `helm template trident <CHART_DIR> .` | `expected at most two arguments, unexpected arguments: .` |
 | `helm template . <CHART_DIR>` | `release name ".": invalid release name` |
 | `helm template trident .` בתיקייה בלי chart | `Chart.yaml file is missing` |
+| `-f` לפני ה-chart (`helm template trident -f <CHART_DIR>`) | `non-absolute URLs should be in form of repo_name/path_to_chart, got: trident` |
+| נתיב values שגוי | `Error: open <FILE>: no such file or directory` |
 | בלי `-n <NS>` | עובד, אבל `namespace: "default"` ב-render |
 
 :::tip[עיקרון]
@@ -61,18 +61,17 @@ helm template <RELEASE> <CHART_DIR> -n <NS> -f base.yaml -f <ENV>.yaml -f versio
 אם עם `probe` ה-exit הוא 0 ובלי — 1: הבעיה היא התג הריק (במקרה כזה זה צפוי, ה-CI ימלא אותו). אחרת הבעיה במקום אחר.
 זו שיטת **isolation**: משנים דבר אחד ורואים מה זז. למספרי גרסה כמו `1.20` השתמש ב-`--set-string`, אחרת Helm הופך אותם למספר.
 
-## `-s` — לרנדר template אחד
+## `-s` — לרנדר template אחד, ולמצוא בתוך ה-render
 
 ```bash title="runs on: VM"
-helm template <RELEASE> <CHART_DIR> -n <NS> -f base.yaml -f <ENV>.yaml -f versions/<ENV>.yaml \
-  -s templates/networking/ingress.yml
+helm template <RELEASE> <CHART_DIR> -n <NS> -f <FILE> -f <FILE> -s templates/networking/ingress.yml
+helm template <RELEASE> <CHART_DIR> -n <NS> -f <FILE> | grep '# Source:' | sort -u
+helm template <RELEASE> <CHART_DIR> -n <NS> -f <FILE> | grep -n -A3 'kind: StatefulSet'
 ```
 
-הנתיב הוא יחסי ל-chart (`-s` = `--show-only`). הרץ בלי `-s` ו-`grep '# Source:'` כדי לראות איזה קבצים קיימים:
+`-s` = `--show-only`, והנתיב יחסי ל-chart. השורה השנייה מראה אילו template files קיימים (אז יודעים מה לתת ל-`-s`). השלישית מראה את תחילת האובייקט עם מספרי שורות.
 
-```bash title="runs on: VM"
-helm template <RELEASE> <CHART_DIR> -n <NS> -f base.yaml | grep '# Source:' | sort -u
-```
+**איך מוודאים:** יוצא רק המסמך שביקשת; ללא `# Source:` ריק.
 
 ## `grep -c` במקום להסתכל על 400 שורות
 
@@ -98,6 +97,20 @@ helm lint <CHART_DIR> -f base.yaml
 
 ב-`less`: `/` ואז שם מפתח מחפש; `n` הבא; `q` יציאה. עוד על קריאת ה-API: [values](../values/#לקרוא-chart-api).
 `helm lint` בודק מבנה בסיסי בלבד ולא תמיד נכשל כשצריך — ראו [lint ≠ template](../testing/#lint--template).
+
+## ארגז כלים: `--set-string`, `dependency list`, `diff` בין סביבות
+
+```bash title="runs on: VM"
+helm template <RELEASE> <CHART_DIR> -f <FILE> --set-string image.tag=1.20      # stays a string, not the number 1.2
+helm show values <CHART_DIR> | grep -n -A5 storage                             # find a key and its comment
+helm lint <CHART_DIR> -f <FILE> -f <FILE>                                      # structure only, see testing page
+helm dependency list <CHART_DIR>                                               # sub-charts (WARNING: no dependencies = none)
+diff <(helm template <RELEASE> <CHART_DIR> -f base.yaml -f dev.yaml) <(helm template <RELEASE> <CHART_DIR> -f base.yaml -f staging.yaml)
+```
+
+ה-`diff` בין שני render-ים הוא הדרך המהירה לראות מה באמת שונה בין סביבות. שורה ריקה = אין הבדל.
+
+**איך מוודאים:** `diff` מדפיס רק את השורות שהשתנו (למשל `storage: 1Gi` מול `2Gi`).
 
 ## values layering: מי מנצח
 
@@ -139,7 +152,7 @@ helm template cache <CHART_DIR> | grep -E '^  name:'
 
 | טעות | מה קורה |
 |---|---|
-| `mountPath:/run/secrets` (בלי רווח אחרי `:`) | scalar אחד במקום key/value. השגיאה לפעמים מופיעה בשורה **הבאה** |
+| `mountPath:/run/secrets/trident` (בלי רווח אחרי `:`) | scalar אחד במקום key/value. השגיאה לפעמים מופיעה בשורה **הבאה** |
 | `Secret:` במקום `secret:` (או `ConfigMap`) | המפתח נשאר בלי משמעות; ה-chart מתעלם או נכשל |
 | `imageRepository` ב-col 0 במקום תחת `generic:` | render עובר, אבל `image: /ingest-api:...` — `.Values.generic.imageRepository` ריק |
 | `- name:` ב-`Chart.yaml` | `cannot load Chart.yaml` |

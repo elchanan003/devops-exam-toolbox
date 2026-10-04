@@ -84,6 +84,20 @@ kubectl -n <NS> get ingress
 
 **איך מוודאים:** שם המשתמש מודפס, וה-Ingress מציג את ה-`<HOST>`. הרצת ה-script היא [bash/templates](../../bash/templates/).
 
+## Application `observability` אדום: סדר ההכנה
+
+:::caution[מלכודת · קרה בתרגול]
+ה-App היה `Failed` אחרי 5 ניסיונות: ה-namespace וה-Secrets לא היו קיימים כש-Argo ניסה. אחרי ש-`prepare-observability.sh` יצר אותם, Argo **לא** ניסה שוב. עדכון ב-Git לא עוזר (Argo לא קורא את `bootstrap/`): צריך **sync ידני**: [argocd/operate](../../argocd/operate/#argo-ויתר-sync-ידני).
+:::
+
+```bash title="runs on: VM"
+bash bootstrap/prepare-observability.sh            # creates namespace + Secrets, safe to run twice
+kubectl get ns <NS>
+kubectl -n <NS> get secret <SECRET> -o jsonpath='{.data}' | jq 'keys'
+```
+
+**איך מוודאים:** ה-namespace קיים, ו-`keys` מציג את שמות המפתחות בלבד (`admin-user`, `admin-password`; בלי ערכים). אז sync ידני, וה-App הופך `Synced`/`Healthy`. סקריפט מלא: [bash/templates](../../bash/templates/).
+
 ## `$${...}` ב-datasources שמוגדרים ב-values
 
 Grafana ו-Helm כל אחד מפרש `${...}`. בתוך `datasources`, ערך כמו `${__value.raw}` שייך ל-Grafana (לא למשתנה סביבה), ולכן כותבים אותו כפול-דולר כדי שיישאר מילולי:

@@ -27,6 +27,7 @@ kubectl config set-context --current --namespace=<NS> # default namespace for th
 
 ```bash title="runs on: VM"
 kubectl -n <NS> get pods -o wide                      # node, IP
+kubectl -n <NS> get all                               # Pods, Services, Deployments, StatefulSets (not Ingress/PVC/Secret)
 kubectl -n <NS> get deploy,sts,svc,ingress,pvc,cm,secret
 kubectl -n argocd get applications
 kubectl get sc                                        # StorageClasses (the default is marked)
@@ -49,26 +50,39 @@ kubectl -n <NS> get events --field-selector type=Warning
 סדר אבחון: קודם `get` (מה המצב), אחר כך `describe` (למה), ואז `logs` (מה האפליקציה אומרת). טבלת symptom → cause מלאה: [debugging/symptoms](../../debugging/symptoms/).
 :::
 
-## לוגים: `logs`, ו-`--previous`
+## אין לוגים? ה-container לא התחיל
 
 ```bash title="runs on: VM"
-kubectl -n <NS> logs deploy/<SERVICE>
-kubectl -n <NS> logs deploy/<SERVICE> --previous      # the crashed container, before the restart
-kubectl -n <NS> logs deploy/<SERVICE> --tail=50
-kubectl -n <NS> logs deploy/<SERVICE> --since=10m
+kubectl -n <NS> logs <POD> -c <CONTAINER>             # pick one container
+kubectl -n <NS> logs <POD> --all-containers
+kubectl -n <NS> logs <POD> -p                         # --previous: the last crashed container
+kubectl -n <NS> logs deploy/<SERVICE> --tail=50 --since=10m
 kubectl -n <NS> logs -l trident.dev/service=<SERVICE> --tail=20
+kubectl -n <NS> get pod <POD> -o jsonpath='{.status.initContainerStatuses[*].state}{"\n"}'
+kubectl -n <NS> get events --sort-by=.lastTimestamp | tail
 ```
 
-ב-`CrashLoopBackOff` הלוג הנוכחי ריק או קצר — ה-`--previous` מראה למה ה-container הקודם מת (למשל `REDIS_HOST` ריק, קובץ סיסמה לא נמצא).
+- `kubectl logs` בלי `-c` על Pod עם כמה containers (או init) בוחר container אחד, לא בהכרח השבור.
+- **לוג ריק = ה-container מעולם לא התחיל.** אל תחפש בלוג: `describe pod` ← `Events` (`StartError`, `FailedMount`, `ImagePullBackOff`).
+- init container שיצא `exit 0` תקין: הוא לא הבעיה. ה-`jsonpath` למעלה מראה את מצבו.
+- ב-`CrashLoopBackOff` הלוג הנוכחי קצר: `-p` מראה למה הקודם מת.
+
+**איך מוודאים:** `Events` מכיל משפט שגיאה מדויק. קרא אותו מילה במילה.
+
+:::caution[מלכודת · קרה בתרגול]
+`postgres-0` ב-CrashLoop עם `StartError … mounting … /var/run/secrets/kubernetes.io … read-only file system`. סיבה: Secret/ConfigMap שמאונט ב-`/run/secrets` **ישירות** מתנגש עם ה-mount של ה-service-account token של Kubernetes (`/var/run` הוא `/run`). תיקון: מאונטים ל-**תת-תיקייה**, `mountPath: /run/secrets/<APP>`, וה-env מצביע על **הקובץ**:
+`POSTGRES_PASSWORD_FILE=/run/secrets/<APP>/postgres_password` (TRIDENT: `<APP>` = `trident`). אותה התנגשות פגעה גם ב-`signal-processor` (ConfigMap path + volumeMount), לא "כי ה-DB למטה". ה-contract דורש נתיב קובץ, לא ערך; התיקייה בחירה שלך.
+:::
 
 ## להיכנס ולבדוק: `exec`, `port-forward`
 
 ```bash title="runs on: VM"
 kubectl -n <NS> exec -it deploy/<SERVICE> -- sh
-kubectl -n <NS> exec deploy/<SERVICE> -- ls /run/secrets
+kubectl -n <NS> exec deploy/<SERVICE> -- ls /run/secrets/<APP>
 kubectl -n <NS> port-forward svc/<SERVICE> 8080:8080  # then: curl http://127.0.0.1:8080/info
 ```
 
+- ל-image ייתכן שאין `sh` או כלים (`curl`, `ls`): אז `exec` נכשל, ואבחון הולך דרך `logs`/`describe`.
 - תמונות Python של הפרויקט **אין בהן `curl`**: `exec deploy/<SERVICE> -- python -c "import urllib.request as u; print(u.urlopen('http://<SERVICE>:8080/live').read())"`.
 - `port-forward` נשאר בחזית עד Ctrl+C. הרץ `curl` מטרמינל שני.
 
@@ -78,9 +92,10 @@ kubectl -n <NS> port-forward svc/<SERVICE> 8080:8080  # then: curl http://127.0.
 kubectl -n <NS> rollout status deploy/<SERVICE>
 kubectl -n <NS> rollout restart deploy/<SERVICE>
 kubectl -n <NS> rollout history deploy/<SERVICE>
+kubectl -n <NS> rollout undo deploy/<SERVICE>         # back one revision
 ```
 
-`rollout restart` שימושי אחרי שינוי ב-Secret/ConfigMap שהאפליקציה קוראת רק בהפעלה. עם Argo: שינוי values ב-Git מחליף Pods בעצמו.
+`rollout restart` שימושי אחרי שינוי ב-Secret/ConfigMap שהאפליקציה קוראת רק בהפעלה. עם Argo: שינוי values ב-Git מחליף Pods בעצמו. `rollout undo` בקלאסטר ש-Argo מנהל יוחזר על ידי selfHeal: התיקון האמיתי הוא `git revert` ב-Git.
 
 ## לקרוא שדה: `-o jsonpath`
 
@@ -112,6 +127,17 @@ kubectl auth can-i get secrets -n <NS>
 kubectl -n <NS> delete pod -l trident.dev/service=<SERVICE>     # the Deployment recreates it
 kubectl explain deployment.spec.strategy             # field documentation from the API server
 ```
+
+## תיעוד offline בזמן המבחן: `explain`, `api-resources`, `wait`
+
+```bash title="runs on: VM"
+kubectl explain <RESOURCE>.spec --recursive | head -40   # TRIDENT: statefulset.spec
+kubectl explain <RESOURCE>.spec.<FIELD>                  # one field, with its description
+kubectl api-resources | grep -i <KIND>                   # exact kind/apiVersion/short name, e.g. ingress
+kubectl -n <NS> wait --for=condition=Ready pod -l <LABEL> --timeout=120s
+```
+
+**איך מוודאים:** `explain` מדפיס את עץ השדות; `wait` מדפיס `pod/... condition met` או נכשל ב-timeout. (`kubectl top` לא זמין: אין metrics-server.)
 
 :::danger[זהירות]
 `kubectl delete` על Application, namespace או Secret הוא הרסני — ב-Argo עם finalizers ו-`prune` יש לזה השלכות. סדר ניקוי נכון: [verify/cleanup](../../verify/cleanup/).

@@ -58,7 +58,7 @@ grep -rn 'repoURL: ""' <FILE>
 |---|---|
 | **Delta on copy**: הדבקת קוד ממקור אחר בלי להחליף שמות | טבלת החלפות (שמות, פורטים, hosts, namespace) ואז `grep -rn 'old-name' .` |
 | **Placeholder שנשאר** (`TODO`, `repoURL: ""`) | `grep -rnE 'TODO\|repoURL: ""' <FILE>` לפני submit |
-| **עצירה ב-PASS**: הסקריפט עבר, ההתנהגות לא נבדקה | `Synced + Healthy` לא מוכיח; בדוק `/info` |
+| **עצירה ב-PASS**: הסקריפט עבר, ההתנהגות לא נבדקה | `Synced + Healthy` לא מוכיח; בדוק `/info` ([verify](../../verify/overview/)) |
 | **תוצר לא הוגש** | רשימת deliverables מול הקבצים |
 | **CRLF / רווח אחרי `\`** | `grep -nP ' +$' <FILE>`, `bash -n <FILE>` |
 

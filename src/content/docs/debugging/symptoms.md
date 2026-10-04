@@ -47,6 +47,7 @@ sidebar:
 | `YAML parse error ... line N` | `defaultImageTag` ריק (לא נעשה promote); הזחה שבורה; חסר רווח אחרי `:` | `helm template ... --set defaultImageTag=probe` | **N הוא שורה ב-output המרונדר, לא ב-template.** promote או תיקון ערך. [helm/testing](../../helm/testing/) |
 | ערך ריק ב-render (`image: /ingest-api`) | מפתח הוצב מחוץ ל-`generic:` (עמודה 0) | `helm template ... \| grep -n 'image:'` | להזיז לבלוק הנכון. [helm/values](../../helm/values/) |
 | `$values` ריק / `helm template` נכשל מקומית | `$values` הוא של Argo בלבד | - | להשתמש בנתיבים אמיתיים, `-f` חוזר. [helm/overview](../../helm/overview/) |
+| `Error: open <FILE>: no such file or directory` ב-`helm template` | שגיאת **נתיב**, לא YAML: `-f` לוקח את המילה הבאה (`-f charts/x` הפך את ה-chart לקובץ values); או values חיים ב-clone של gitops ולא ב-templates | `ls <FILE>`; לספור `-f` מול קבצים | `helm template <RELEASE> <CHART_DIR> -n <NS> -f <FILE>`: ה-chart ראשון, כל `-f` עם נתיב אמיתי. [helm/overview](../../helm/overview/) |
 | lint עובר, `template` נכשל | `required` לא מסופק: lint לא מכשיל | `helm template ...; echo $?` | להשתמש ב-`template`. [helm/testing](../../helm/testing/) |
 | רינדור עובר אבל ערך לא הוזרק | שם מפתח/רישיות שגויה (`secret` ו-`Secret`) | `helm template ... \| grep -n 'expected-key'` | לתקן מפתח; תמיד לרנדר אחרי עריכה |
 
@@ -60,6 +61,9 @@ sidebar:
 | `kubectl get applications -n argocd` ריק אחרי push | ה-root לא הוחל ידנית (bootstrap edge) | `kubectl get applications -n argocd` | להריץ את סקריפט ה-bootstrap. [argocd/overview](../../argocd/overview/) |
 | `OutOfSync` לנצח | שדה שה-cluster מילא בברירת מחדל; שדה immutable שונה (selector) | diff ב-UI של Argo | להסיר/להתאים את השדה. [argocd/applications](../../argocd/applications/) |
 | `Synced` + `Healthy` אבל לא עובד | אף אחד מהם לא מוכיח התנהגות | `curl -k --resolve <HOST>:<PORT>:<VM_IP> https://<HOST>:<PORT>/info` | לבדוק `/info`, לוגים, ConfigMap |
+| `StatefulSet.apps "postgres" is invalid: spec: Forbidden: updates to statefulset spec for fields other than 'replicas', 'ordinals', 'template', 'updateStrategy', 'persistentVolumeClaimRetentionPolicy' and 'minReadySeconds' are forbidden` | `volumeClaimTemplates` של StatefulSet הוא immutable (למשל אחרי הוספת `storage.className`) | `kubectl -n argocd get application <APP> -o jsonpath='{.status.operationState.message}{"\n"}'` | לפני שמוחקים: אין נתונים ב-PVC? נמחק רק STS + PVC (Argo יוצר מחדש מ-Git), **לא** את ה-StorageClass. אם התיקון ב-Git לפני היצירה הראשונה, אין מה למחוק. [kubernetes/storage-probes](../../kubernetes/storage-probes/) |
+| `operationState.phase: Failed` ולא משתנה | Argo נוטש אחרי 5 ניסיונות sync; `refresh=hard` קורא Git אבל לא מפעיל sync מחדש | `kubectl -n argocd get application <APP> -o jsonpath='{.status.operationState.phase} {.status.operationState.finishedAt}{"\n"}'; date -u` | לתקן את הסיבה, ואז **sync ידני** (כפתור Sync ב-UI). `push` ל-Git לא עוזר אם הכשל במצב ה-cluster. [argocd/operate](../../argocd/operate/) |
+| `operationState.message` מראה שגיאה ישנה | ההודעה נשארת מהניסיון האחרון | להשוות `finishedAt` ל-`date -u` | לא סומכים על הודעה בלי timestamp. [argocd/operate](../../argocd/operate/) |
 | תיקון `kubectl edit` / `scale` נעלם | selfHeal | - | התיקון ב-Git. [argocd/operate](../../argocd/operate/) |
 | `syncPolicy: {}`: אין sync אוטומטי | חסר `automated` | `kubectl get application <APP> -n argocd -o jsonpath='{.spec.syncPolicy}'` | `automated: {prune: true, selfHeal: true}` |
 | ה-app לא נמחק | finalizer / root שמכיל את עצמו | `kubectl get application <APP> -n argocd -o jsonpath='{.metadata.finalizers}'` | [cleanup](../../verify/cleanup/) |
@@ -70,14 +74,17 @@ sidebar:
 |---|---|---|---|
 | `ImagePullBackOff` / `ErrImagePull` | Secret של pull חסר **ב-namespace הזה**; server שגוי; scope של token; `extraImagePullSecrets` לא הוגדר; נתיב/tag שגוי; `defaultImageTag` ריק | `kubectl describe pod -n <NS> -l trident.dev/service=<SERVICE>` ואז Events | `bash bootstrap/prepare-environment.sh <ENV>` ל-env החסר; לתקן values. [kubernetes/secrets](../../kubernetes/secrets/) |
 | עובד ב-dev ולא ב-staging | משהו שונה: בדרך כלל Secret ב-namespace | `kubectl get secret -n <NS>` | `bash bootstrap/prepare-environment.sh <ENV>` |
-| `CrashLoopBackOff` | משתנה ריק (`REDIS_HOST`); קובץ סיסמה לא מותקן; DB לא עלה | `kubectl logs -n <NS> -l trident.dev/service=<SERVICE> --previous` | לתקן values; ייתכן downstream של Pod אחר |
+| `CrashLoopBackOff` | משתנה ריק (`REDIS_HOST`); קובץ סיסמה לא מותקן; DB לא עלה | `kubectl logs -n <NS> -l trident.dev/service=<SERVICE> --previous` | לתקן values; לא להניח "downstream": לקרוא logs/Events של כל Pod שנופל |
+| `StartError ... mounting ... /var/run/secrets/kubernetes.io ... read-only file system` (`postgres-0` ב-`CrashLoopBackOff`) | Secret הותקן ב-`/run/secrets` (קריאה בלבד) והתנגש בהתקנת ה-token של ה-service account (`/var/run` הוא `/run`) | `kubectl -n <NS> describe pod postgres-0` ואז Events | `mountPath: /run/secrets/<APP>` (תת-תיקייה) ו-`POSTGRES_PASSWORD_FILE=/run/secrets/<APP>/postgres_password` (הקובץ, לא התיקייה). אותה התנגשות פגעה גם ב-signal-processor. [kubernetes/overview](../../kubernetes/overview/) |
+| `kubectl logs` ריק / אין לוגים | ה-container **אף פעם לא התחיל** (אין מה להדפיס) | `kubectl -n <NS> describe pod <SERVICE>-0` ואז Events; `logs -c <CONTAINER>` בוחר container; `--previous` לקריסה אחרונה | לקרוא Events, לא לוגים; init container שיצא 0 תקין. [kubernetes/overview](../../kubernetes/overview/) |
+| Pod של StatefulSet שבור לא מוחלף אחרי תיקון ב-Git | rolling update של StatefulSet מחכה שה-Pod הישן יהיה Ready | `kubectl -n <NS> get pods -w` | `kubectl -n <NS> delete pod <SERVICE>-0`: ה-StatefulSet יוצר אותו מחדש עם ה-spec החדש. ב-Deployment לא מוחקים, הוא מחליף לבד. [kubernetes/storage-probes](../../kubernetes/storage-probes/) |
 | Pod `Running` אבל לא `Ready` | תלות לא זמינה (503 בכוונה); host שגוי ב-ConfigMap | `kubectl describe pod -n <NS> -l trident.dev/service=<SERVICE>` (probe) | לתקן את התלות. [storage-probes](../../kubernetes/storage-probes/) |
-| `pod has unbound immediate PersistentVolumeClaims` (Pod `Pending`) | `storage.className` חסר, אין default StorageClass | `kubectl get pvc -n <NS>` (עמודת STORAGECLASS ריקה); `kubectl get sc` | `storage.className: course-local-path` **ב-values**, ו-push |
+| `pod has unbound immediate PersistentVolumeClaims` (Pod `Pending`) | `storage.className` חסר, אין default StorageClass | `kubectl get pvc -n <NS>` (עמודת STORAGECLASS ריקה); `kubectl get sc` | `storage.className: course-local-path` **ב-values** (לא default StorageClass ב-cluster), ו-push. אם ה-StatefulSet כבר קיים: ראה `Forbidden` בשכבת Argo |
 | `Pending` בלי שגיאה, PVC `WaitForFirstConsumer` | תקין עד ש-Pod משתמש בו | `kubectl describe pvc -n <NS>` | אין. אם Pod לא קיים, תקן אותו |
 | Pod לא נוצר | Secret/ConfigMap מופנה לא קיים | `kubectl get events -n <NS> --sort-by=.lastTimestamp` | ליצור את ה-Secret הנדרש |
 
 :::caution[מלכודת · קרה בתרגול]
-`postgres-0` נשאר `Pending` ו-signal-processor ב-`CrashLoopBackOff`: המפתח `className` חסר ב-values של postgres, אף על פי שה-header של הקובץ מזכיר אותו. ה-CrashLoop היה downstream של ה-DB. תיקון ב-values, לא חי.
+`postgres-0` נשאר `Pending`: המפתח `className` חסר ב-values. אחרי התיקון Argo נכשל על `Forbidden` (immutable), ואחרי מחיקת STS + PVC ה-Pod נפל ב-`read-only file system`. ה-signal-processor נפל מאותה התנגשות ב-mount, **לא** בגלל ה-DB. תיקון תמיד ב-values/Git, לא חי.
 :::
 
 ## Ingress ו-TLS
