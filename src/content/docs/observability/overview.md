@@ -2,6 +2,7 @@
 title: Observability — Prometheus ו-Grafana משותפים
 description: Prometheus אחד ו-Grafana אחד שסורקים שלוש סביבות, label ה-namespace, Secret ה-admin, ingress, dashboard ב-kustomize ותקלות נפוצות.
 sidebar:
+  label: "Prometheus ו-Grafana משותפים"
   order: 1
 ---
 

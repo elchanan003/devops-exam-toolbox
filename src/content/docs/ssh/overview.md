@@ -2,6 +2,7 @@
 title: SSH — מפתחות ו-GitLab
 description: ליצור key, לרשום את ה-.pub ב-GitLab, להגדיר ~/.ssh/config, לבדוק עם ssh -T ו-ssh -v, ולהבין authn מול authz.
 sidebar:
+  label: "מפתחות ו-GitLab"
   order: 1
 ---
 

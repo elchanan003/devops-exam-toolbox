@@ -2,6 +2,7 @@
 title: תפעול Argo CD — repo Secrets, סטטוסים, kubectl
 description: איך רושמים repo ל-Argo, קוראים Synced/Healthy/Unknown, מפענחים ComparisonError, ובודקים self-heal ו-prune רק עם kubectl.
 sidebar:
+  label: "repo Secrets, סטטוסים, kubectl"
   order: 3
 ---
 

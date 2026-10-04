@@ -2,6 +2,7 @@
 title: Argo CD — מה הוא עושה ואיך מגיעים אליו
 description: התפקיד של Argo CD בתכנון, app-of-apps, ה-bootstrap הידני, הזרימה אחרי promote, וגישה ל-UI בלי CLI.
 sidebar:
+  label: "מה הוא עושה ואיך מגיעים אליו"
   order: 1
 ---
 

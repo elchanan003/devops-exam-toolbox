@@ -2,6 +2,7 @@
 title: Git — הכנה וסדר עבודה בסיסי
 description: הגדרת זהות, clone, status/add/commit, log/diff ו-remotes, ומה Git עושה בפרויקט עם כמה repos.
 sidebar:
+  label: "הכנה וסדר עבודה בסיסי"
   order: 1
 ---
 

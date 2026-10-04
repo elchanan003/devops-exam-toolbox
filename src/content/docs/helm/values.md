@@ -2,6 +2,7 @@
 title: values — לקרוא chart ולמלא אותו
 description: איך קוראים את ה-API של chart, גיליון עזר ל-nxs-universal-chart, ומפתחות החשובים של postgres ו-redis.
 sidebar:
+  label: "לקרוא chart ולמלא אותו"
   order: 2
 ---
 

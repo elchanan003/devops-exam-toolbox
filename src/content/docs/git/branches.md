@@ -2,6 +2,7 @@
 title: Git — branches ו-tags
 description: ליצור branch, לעבור בין branches, לדחוף כמה branches ו-tags, ולהבין tracking.
 sidebar:
+  label: "branches ו-tags"
   order: 2
 ---
 

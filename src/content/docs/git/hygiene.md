@@ -2,6 +2,7 @@
 title: Git — היגיינה לפני commit
 description: .gitattributes ו-CRLF, רווחים בסוף שורה, בדיקת status לפני --hard, .gitignore ו-[skip ci].
 sidebar:
+  label: "היגיינה לפני commit"
   order: 5
 ---
 

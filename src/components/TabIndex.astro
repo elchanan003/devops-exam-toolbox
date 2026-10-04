@@ -14,7 +14,7 @@ const fmt = (s: string) => esc(s).replace(/`([^`]+)`/g, '<code>$1</code>');
 <div class="tb-index">
   {index.map((block) => (
     <section>
-      <h2><a href={url(block.href)}>{block.tab}</a><small dir="ltr">{block.note}</small></h2>
+      <h2><a href={url(block.href)}>{block.tab}</a></h2>
       <ul>
         {block.links.map(([label, href]) => (
           <li><a href={url(href)} set:html={fmt(label)} /></li>

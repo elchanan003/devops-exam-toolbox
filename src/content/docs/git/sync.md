@@ -2,6 +2,7 @@
 title: Git — סנכרון מול GitLab
 description: fetch מול pull, merge --ff-only, אבחון divergence, דחיפה ל-branch ספציפי, ומתי אסור force-push.
 sidebar:
+  label: "סנכרון מול GitLab"
   order: 3
 ---
 

@@ -2,6 +2,7 @@
 title: Helm — פקודות ו-values
 description: להריץ helm template מקומי בדיוק כמו ש-Argo מריץ, לקרוא chart, ולהבין איך קבצי values נערמים זה על זה.
 sidebar:
+  label: "פקודות ו-values"
   order: 1
 ---
 

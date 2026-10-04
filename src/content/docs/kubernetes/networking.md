@@ -2,6 +2,7 @@
 title: Networking — DNS, Ingress, TLS, NetworkPolicy
 description: איך Pods מוצאים זה את זה, איך ניגשים מבחוץ עם curl --resolve ל-NodePort, ואיך כותבים NetworkPolicy ובודקים אותה.
 sidebar:
+  label: "DNS, Ingress, TLS, NetworkPolicy"
   order: 3
 ---
 

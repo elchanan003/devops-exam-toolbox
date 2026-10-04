@@ -59,7 +59,7 @@
   --sl-color-gray-5: #c9d4ce;
   --sl-color-gray-6: #e6ece8;
   --sl-color-gray-7: #f3f5f3;
-  --sl-color-black: #fbfcfb;
+  --sl-color-black: #f3f5f3;   /* page ground */
 
   --sl-color-accent-low: #e2efec;
   --sl-color-accent: #0c6b5b;
@@ -67,9 +67,9 @@
 
   --sl-color-text: #22302a;
   --sl-color-text-accent: #0c6b5b;
-  --sl-color-bg-nav: #f3f5f3;
-  --sl-color-bg-sidebar: #f3f5f3;
-  --sl-color-bg-inline-code: #eaf0ec;
+  --sl-color-bg-nav: #e9eeea;
+  --sl-color-bg-sidebar: #e9eeea;
+  --sl-color-bg-inline-code: #e6ede8;
   --sl-color-hairline-light: #dfe6e1;
   --sl-color-hairline: #d8e0db;
 
@@ -127,12 +127,12 @@ h1, h2, h3, h4,
   text-wrap: balance;
   letter-spacing: -0.01em;
 }
-.sl-markdown-content h2 {
+.sl-markdown-content .sl-heading-wrapper.level-h2 {
   margin-top: 2.6rem;
   padding-top: 1.1rem;
   border-top: 1px solid var(--tb-rule);
-  font-weight: 600;
 }
+.sl-markdown-content h2 { font-weight: 600; }
 .sl-markdown-content h3 { margin-top: 1.8rem; font-weight: 600; }
 .sl-markdown-content :is(h2, h3) + * { margin-top: 0.6rem; }
 .sl-markdown-content p,
@@ -215,6 +215,9 @@ code .ph, .ph {
 .sl-markdown-content tr:hover td { background: color-mix(in srgb, var(--sl-color-accent) 5%, transparent); }
 .sl-markdown-content td code { white-space: nowrap; }
 .sl-markdown-content td:first-child { font-weight: 500; }
+@media (max-width: 50rem) {
+  .sl-markdown-content :is(th, td) { min-width: 9rem; }
+}
 
 /* 7. Callouts: tinted field + 1px rule, no thick side bar ---------------------- */
 .starlight-aside {
@@ -312,45 +315,41 @@ kbd {
 .tb-firstaid span { font-size: 0.875rem; color: var(--tb-muted); line-height: 1.45; }
 
 .tb-index {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(21rem, 1fr));
-  column-gap: 2.5rem;
-  row-gap: 0.5rem;
-  margin-top: 1.25rem !important;
+  columns: 20rem;                 /* balanced column flow: no holes beside short blocks */
+  column-gap: 2.75rem;
+  margin-top: 1.5rem !important;
 }
-.tb-index section { break-inside: avoid; margin: 0 !important; padding-block: 0.9rem 0.6rem; border-top: 2px solid var(--sl-color-gray-5); }
+.tb-index section {
+  break-inside: avoid;
+  margin: 0 0 1.4rem !important;
+  padding-top: 0.85rem;
+  border-top: 2px solid var(--sl-color-gray-5);
+}
 .tb-index h2 {
   margin: 0 !important;
   padding: 0 !important;
   border: 0 !important;
-  font-size: 1.125rem;
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 1rem;
+  font-size: 1.3rem;
+  font-weight: 700;
 }
 .tb-index h2 a { color: var(--sl-color-white); text-decoration: none; }
-.tb-index h2 a:hover { color: var(--sl-color-text-accent); }
-.tb-index h2 small {
-  font-family: var(--sl-font);
-  font-weight: 400;
-  font-size: 0.8125rem;
-  color: var(--tb-muted);
-  letter-spacing: 0;
-}
-.tb-index ul { list-style: none; padding: 0; margin: 0.45rem 0 0 !important; }
+.tb-index h2 a:hover { color: var(--sl-color-text-accent); text-decoration: underline; text-underline-offset: 0.2em; }
+.tb-index ul { list-style: none; padding: 0; margin: 0.5rem 0 0 !important; }
 .tb-index li { margin: 0 !important; max-width: none; }
 .tb-index li a {
-  display: block;
-  padding: 0.22rem 0;
-  font-size: 0.96875rem;
+  display: inline-block;
+  padding: 0.2rem 0;
+  font-size: 1rem;
   line-height: 1.45;
-  color: var(--sl-color-text);
-  text-decoration: none;
-  border-bottom: 1px dotted transparent;
+  color: var(--sl-color-text-accent);
+  text-decoration: underline;
+  text-decoration-color: color-mix(in srgb, var(--sl-color-accent) 22%, transparent);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.22em;
 }
-.tb-index li a:hover { color: var(--sl-color-text-accent); }
-.tb-index li a code { font-size: 0.85em; }
+.tb-index li a:hover { text-decoration-color: currentColor; text-decoration-thickness: 2px; }
+.tb-index li a code { font-size: 0.85em; text-decoration: none; }
+.tb-home-search { margin-top: 0.4rem !important; font-size: 0.9375rem; color: var(--tb-muted); }
 
 @media (prefers-reduced-motion: reduce) {
   .tb-firstaid a { transition: none; }

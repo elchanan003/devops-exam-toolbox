@@ -2,6 +2,7 @@
 title: Git — לבטל, לחזור אחורה ולשחזר
 description: restore, amend, reset soft/mixed/hard, revert, reflog, חזרה ל-commit ישן, cherry-pick ו-stash.
 sidebar:
+  label: "לבטל, לחזור אחורה ולשחזר"
   order: 4
 ---
 

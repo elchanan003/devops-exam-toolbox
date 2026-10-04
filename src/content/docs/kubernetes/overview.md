@@ -2,6 +2,7 @@
 title: kubectl — גיליון לפי משימה
 description: פקודות kubectl מסודרות לפי מה שרוצים לעשות, כולל describe, logs --previous, jsonpath ו-rollout.
 sidebar:
+  label: "גיליון לפי משימה"
   order: 1
 ---
 

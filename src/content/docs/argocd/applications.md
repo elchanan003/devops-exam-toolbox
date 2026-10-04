@@ -2,6 +2,7 @@
 title: Application YAML — root, multi-source, syncPolicy
 description: צורות ה-YAML המדויקות של Application ב-Argo CD, מאיפה מגיע כל ערך, ו-targetRevision של tag מול branch.
 sidebar:
+  label: "root, multi-source, syncPolicy"
   order: 2
 ---
 
