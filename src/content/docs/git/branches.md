@@ -149,6 +149,6 @@ git merge --ff-only <BRANCH>
 git push
 ```
 
-`--ff-only` מתקדם רק אם `main` הוא אב קדמון ישיר של `<BRANCH>`, כלומר `main` מקבל בדיוק את ה-commits שנבדקו ב-`<BRANCH>`. אחרת נכשל (ראה [sync](../sync/#merge-ff-only-נכשל-diverged)).
+`--ff-only` מתקדם רק אם `main` הוא אב קדמון ישיר של `<BRANCH>`, כלומר `main` מקבל בדיוק את ה-commits שנבדקו ב-`<BRANCH>`. אחרת נכשל (ראה [sync](../sync/#merge---ff-only-נכשל-diverged)).
 
 **איך מוודאים:** `git log --oneline -3` על `main` מציג את אותו `<SHA>` כמו ב-`<BRANCH>`: `git rev-parse main <BRANCH>` מדפיס שורה זהה פעמיים.

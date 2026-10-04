@@ -160,6 +160,8 @@ h1, h2, h3, h4,
 :not(pre) > code {
   direction: ltr;
   unicode-bidi: isolate;
+  white-space: nowrap;            /* never split a flag like --force at its hyphen */
+  font-variant-ligatures: none;
   font-size: 0.86em;
   padding: 0.1em 0.35em;
   border-radius: 4px;

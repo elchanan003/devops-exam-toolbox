@@ -25,7 +25,7 @@ git revert --no-edit <SHA>
 git push
 ```
 
-הרגל לפני כל `--hard`: `git status` נקי. מי שכבר דחף: **רק `revert`**, אף פעם לא `reset` + `--force` ([sync](../sync/#למה-אסור-force-כאן-ומה-זה-force-with-lease)).
+הרגל לפני כל `--hard`: `git status` נקי. מי שכבר דחף: **רק `revert`**, אף פעם לא `reset` + `--force` ([sync](../sync/#למה-אסור---force-כאן-ומה-זה---force-with-lease)).
 
 ## להחזיר קובץ למצב של ה-commit האחרון (restore)
 

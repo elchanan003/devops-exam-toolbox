@@ -8,6 +8,7 @@ export default defineConfig({
   site: 'https://elchanan003.github.io',
   base: '/devops-exam-toolbox',
   markdown: {
+    smartypants: false, // never turn -- into an em-dash: commands must stay copyable
     remarkPlugins: [remarkPlaceholderMarkers],
     rehypePlugins: [rehypeInlinePlaceholders],
   },
