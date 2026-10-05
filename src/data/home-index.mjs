@@ -2,6 +2,7 @@
 // href is relative to the site base (no leading slash). Add a block = add an object; order = display order.
 export const firstAid = [
   { href: 'quick/overview/', title: 'שליפה מהירה', text: 'הפקודות הנפוצות, מסך אחד לכל תחום' },
+  { href: 'playbook/overview/', title: 'גישה למבחן', text: 'מה עושים עכשיו, ואיך יודעים שזה עבד' },
   { href: 'debugging/symptoms/', title: 'טבלת תקלות', text: 'הודעת שגיאה ← סיבה ← פקודת בדיקה' },
   { href: 'architecture/overview/', title: 'איפה זה רץ?', text: 'VM, CI job, GitLab UI, Argo — ומאיפה המשתנים' },
   { href: 'bash/templates/', title: 'סקריפטים מלאים', text: 'prepare, promote, cleanup — להעתקה' },
@@ -9,6 +10,17 @@ export const firstAid = [
 ];
 
 export const index = [
+  { tab: 'גישה למבחן', href: 'playbook/overview/', links: [
+    ['אם לא קוראים כלום אחר', 'playbook/overview/'],
+    ['15 הדקות הראשונות: למפות בלי להקליד', 'playbook/first-15-minutes/'],
+    ['`preflight.sh` ו-`env.sh`', 'playbook/environment-setup/'],
+    ['סדר העבודה ושערי בדיקה', 'playbook/order-of-work/'],
+    ['למנוע תקלות מוכרות מראש', 'playbook/prevent-known-problems/'],
+    ['נתקעתי: פרוטוקול', 'playbook/when-stuck/'],
+    ['20 הדקות האחרונות', 'playbook/last-20-minutes/'],
+    ['יצירתיות שמזכה בנקודות', 'playbook/creativity/'],
+    ['תרגול: שגיאה ← סיבה', 'playbook/drill/'],
+  ]},
   { tab: 'התמונה הגדולה', href: 'architecture/overview/', links: [
     ['פיצול ה-repos והזרימה מקצה לקצה', 'architecture/overview/#הזרימה-מקצה-לקצה'],
     ['מפת credentials: מי קורא, מי כותב', 'architecture/credentials/'],

@@ -70,4 +70,4 @@ grep -rn 'repoURL: ""' <FILE>
 כשל נראה כמו "חוסר ידע" אבל הסיבה בדרך כלל היא היעדר הליך. הליך כתוב מנצח זיכרון בלחץ.
 :::
 
-המשך: [התמונה הגדולה](../overview/) · [סימפטומים](../../debugging/symptoms/) · [cleanup וצ'קליסט](../../verify/cleanup/).
+המשך: [גישה למבחן — ההליך המלא](../../playbook/overview/) · [התמונה הגדולה](../overview/) · [סימפטומים](../../debugging/symptoms/) · [cleanup וצ'קליסט](../../verify/cleanup/).
